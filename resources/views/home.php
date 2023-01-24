@@ -10,6 +10,9 @@
 
 <body>
     <h1>Hola desde la pagina home</h1>
+
+    <p>Titulo <?= $title ?></p>
+    <p>Descripción: <?= $description ?></p>
 </body>
 
 </html>

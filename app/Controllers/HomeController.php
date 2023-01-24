@@ -6,7 +6,12 @@ class HomeController extends Controller
 {
     public function index()
     {
-        return $this->view('home');
+        $data = [
+            'title' => 'Home',
+            'description' => 'Pagina home'
+        ];
+
+        return $this->view('home', $data);
     }
 
     public function courses($id)
