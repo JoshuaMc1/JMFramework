@@ -1,0 +1,43 @@
+{
+    "name": "joshuamc1/jmfwork",
+    "description": "JMFramework - JMProjects",
+    "type": "project",
+    "keywords": [
+        "php",
+        "php8",
+        "framework",
+        "JMFWork",
+        "JMProjects"
+    ],
+    "require": {
+        "illuminate/console": "10.*",
+        "symfony/event-dispatcher": "6.3.x-dev"
+    },
+    "license": "GPL-3.0-or-later",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Lib\\": "lib/"
+        },
+        "files": [
+            "app/Commands/HelloCommand",
+            "app/Commands/CreateController",
+            "app/Commands/CreateModel",
+            "app/Commands/CacheExpiredClear"
+        ]
+    },
+    "bin": [
+        "console"
+    ],
+    "authors": [
+        {
+            "name": "Joshua Mclean",
+            "email": "86990609+JoshuaMc1@users.noreply.github.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "joshua15mclean@gmail.com"
+    },
+    "minimum-stability": "dev"
+}

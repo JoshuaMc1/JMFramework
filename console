@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+
+use Illuminate\Console\Application;
+use Illuminate\Container\Container;
+use Illuminate\Events\Dispatcher;
+
+$container = new Container();
+$dispatcher = new Dispatcher($container);
+$app = new Application($container, $dispatcher, 'JMFramework', '1.0.0');
+
+// Registrar comandos aquí
+$app->add(new \App\Console\Commands\HelloWorldCommand());
+$app->add(new App\Console\Commands\CreateController());
+$app->add(new App\Console\Commands\CreateModel());
+$app->add(new App\Console\Commands\CacheExpiredClear());
+
+$app->run();
