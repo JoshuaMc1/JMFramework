@@ -4,6 +4,14 @@ namespace App\Controllers;
 
 class Controller
 {
+    /**
+     * It takes a route and an array of data, extracts the data, and returns the content of the file
+     * 
+     * @param route The route to the view file.
+     * @param data This is an array of data that you want to pass to the view.
+     * 
+     * @return The content of the view.
+     */
     public function view($route, $data = [])
     {
         extract($data);

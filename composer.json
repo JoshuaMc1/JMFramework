@@ -18,13 +18,7 @@
         "psr-4": {
             "App\\": "app/",
             "Lib\\": "lib/"
-        },
-        "files": [
-            "app/Commands/HelloCommand",
-            "app/Commands/CreateController",
-            "app/Commands/CreateModel",
-            "app/Commands/CacheExpiredClear"
-        ]
+        }
     },
     "bin": [
         "console"

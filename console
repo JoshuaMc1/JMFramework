@@ -13,9 +13,11 @@ $dispatcher = new Dispatcher($container);
 $app = new Application($container, $dispatcher, 'JMFramework', '1.0.0');
 
 // Registrar comandos aquí
-$app->add(new \App\Console\Commands\HelloWorldCommand());
+$app->add(new App\Console\Commands\HelloWorldCommand());
 $app->add(new App\Console\Commands\CreateController());
 $app->add(new App\Console\Commands\CreateModel());
 $app->add(new App\Console\Commands\CacheExpiredClear());
+$app->add(new App\Console\Commands\CreateStorageDirectory());
+$app->add(new App\Console\Commands\Server());
 
 $app->run();

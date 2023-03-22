@@ -1,5 +1,6 @@
 <?php
 
+/* Defining the database host, user, password, name, and port. */
 define('DB_HOST', '');
 define('DB_USER', '');
 define('DB_PASS', '');
