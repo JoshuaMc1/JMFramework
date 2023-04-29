@@ -2,39 +2,17 @@
 
 namespace App\Models;
 
-use mysqli;
+use Lib\Connection\Connection;
 
 class Model
 {
-    /* Setting the database connection variables. */
-    protected $db_host = DB_HOST;
-    protected $db_user = DB_USER;
-    protected $db_pass = DB_PASS;
-    protected $db_name = DB_NAME;
-    protected $db_port = DB_PORT;
-
-    /* Setting the variables for the database connection, query, and table. */
     protected $connection;
     protected $query;
     protected $table;
 
-    /**
-     * The constructor function is called when the class is instantiated.
-     */
     public function __construct()
     {
-        $this->connection();
-    }
-
-    /**
-     * It connects to the database.
-     */
-    public function connection()
-    {
-        $this->connection =  new mysqli($this->db_host, $this->db_user, $this->db_pass, $this->db_name, $this->db_port);
-        if ($this->connection->connect_error) {
-            die('Connection error: ' . $this->connection->connect_error);
-        }
+        $this->connection = (new Connection())->getConnection();
     }
 
     /**

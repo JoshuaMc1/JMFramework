@@ -7,17 +7,20 @@ require __DIR__ . '/vendor/autoload.php';
 use Illuminate\Console\Application;
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
+use Symfony\Component\Finder\Finder;
+
+$finder = new Finder();
+$finder->files()->in(__DIR__ . '/app/Console/Commands/')->name('*.php');
 
 $container = new Container();
 $dispatcher = new Dispatcher($container);
-$app = new Application($container, $dispatcher, 'JMFramework', '1.0.0');
+$application = new Application($container, $dispatcher, 'JMFramework', '1.1.0');
 
-// Registrar comandos aquí
-$app->add(new App\Console\Commands\HelloWorldCommand());
-$app->add(new App\Console\Commands\CreateController());
-$app->add(new App\Console\Commands\CreateModel());
-$app->add(new App\Console\Commands\CacheExpiredClear());
-$app->add(new App\Console\Commands\CreateStorageDirectory());
-$app->add(new App\Console\Commands\Server());
+foreach ($finder as $file) {
+    $commandClass = 'App\Console\Commands\\' . $file->getBasename('.php');
+    if (class_exists($commandClass)) {
+        $application->add(new $commandClass());
+    }
+}
 
-$app->run();
+$application->run();
