@@ -4,32 +4,19 @@ namespace App\Controllers;
 
 class Controller
 {
-    /**
-     * It takes a route and an array of data, extracts the data, and returns the content of the file
-     * 
-     * @param route The route to the view file.
-     * @param data This is an array of data that you want to pass to the view.
-     * 
-     * @return The content of the view.
-     */
-    public function view($route, $data = [])
+    public function view(string $route, array $data = []): string
     {
         extract($data);
 
-        $route = str_replace('.', '/', $route);
+        $viewPath = str_replace('.', '/', $route);
+        $viewFile = "../resources/views/{$viewPath}.php";
 
-        $filePath = "../resources/views/{$route}.php";
-
-        if (file_exists($filePath)) {
-            ob_start();
-
-            include $filePath;
-
-            $content = ob_get_clean();
-
-            return $content;
-        } else {
+        if (!file_exists($viewFile)) {
             return 'El archivo no existe';
         }
+
+        ob_start();
+        include $viewFile;
+        return ob_get_clean();
     }
 }
