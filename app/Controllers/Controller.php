@@ -6,7 +6,7 @@ class Controller
 {
     public function view(string $route, array $data = []): string
     {
-        extract($data);
+        extract($data, EXTR_OVERWRITE | EXTR_PREFIX_ALL, 'data');
 
         $viewPath = str_replace('.', '/', $route);
         $viewFile = "../resources/views/{$viewPath}.php";
