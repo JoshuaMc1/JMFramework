@@ -2,10 +2,12 @@
 
 namespace App\Controllers;
 
-class WelcomeController extends Controller
+use function Lib\Global\view;
+
+class WelcomeController
 {
     public function welcome()
     {
-        return $this->view('welcome');
+        return view('welcome');
     }
 }

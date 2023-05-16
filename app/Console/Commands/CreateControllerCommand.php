@@ -4,11 +4,11 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class CreateController extends Command
+class CreateControllerCommand extends Command
 {
-    protected $signature = 'controller {name} {--r}';
+    protected $signature = 'create:controller {name} {--r}';
 
-    protected $description = 'Crear un nuevo controlador';
+    protected $description = 'Create a new controller';
 
     public function handle()
     {
@@ -18,36 +18,40 @@ class CreateController extends Command
         $resource = $this->option('r');
 
         if (file_exists($filename)) {
-            $this->error('El controlador ya existe!');
+            $this->error('The controller already exists!');
         } else {
             $stub = $resource ? $this->getResourceControllerStub($name) : $this->getControllerStub($name);
             file_put_contents($filename, $stub);
-            $this->info('Controlador creado correctamente.');
+            $this->info('Controller successfully created.');
         }
     }
 
     protected function getControllerStub($name)
     {
-        return <<<EOD
+        return addcslashes(<<<EOD
         <?php
 
         namespace App\Controllers;
 
-        class $name extends Controller
+        use function Lib\Global\view;
+
+        class $name
         {
             //
         }
-        EOD;
+        EOD, "\v");
     }
 
     protected function getResourceControllerStub($name)
     {
-        return <<<EOD
+        return addcslashes(<<<EOD
         <?php
 
         namespace App\Controllers;
 
-        class $name extends Controller
+        use function Lib\Global\view;
+
+        class $name
         {
             public function index()
             {
@@ -84,6 +88,6 @@ class CreateController extends Command
                 //
             }
         }
-        EOD;
+        EOD, "\v");
     }
 }

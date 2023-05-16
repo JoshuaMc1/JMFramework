@@ -2,6 +2,7 @@
 
 namespace Lib\Connection;
 
+use Lib\Http\ErrorHandler;
 use mysqli;
 
 class Connection
@@ -15,10 +16,16 @@ class Connection
 
     protected function connect()
     {
-        $this->connection = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
+        try {
+            $this->connection = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
 
-        if ($this->connection->connect_error) {
-            die('Connection error: ' . $this->connection->connect_error);
+            if ($this->connection->connect_error) {
+                ErrorHandler::renderError(500, 'Internal Server Error', $this->connection->connect_error);
+                die();
+            }
+        } catch (\Throwable $th) {
+            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+            die();
         }
     }
 
@@ -29,6 +36,6 @@ class Connection
 
     public function getConnection()
     {
-        return self::$connection;
+        return $this->connection;
     }
 }

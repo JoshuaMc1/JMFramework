@@ -30,8 +30,14 @@
             "role": "Developer"
         }
     ],
+    "scripts": {
+        "test": "./vendor/bin/phpunit test/"
+    },
     "support": {
         "email": "joshua15mclean@gmail.com"
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "require-dev": {
+        "phpunit/phpunit": "10.2.x-dev"
+    }
 }

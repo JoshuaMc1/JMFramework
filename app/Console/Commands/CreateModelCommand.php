@@ -4,11 +4,11 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class CreateModel extends Command
+class CreateModelCommand extends Command
 {
-    protected $signature = 'model {name}';
+    protected $signature = 'create:model {name}';
 
-    protected $description = 'Crear un nuevo modelo';
+    protected $description = 'Create a new model';
 
     public function handle()
     {
@@ -20,6 +20,8 @@ class CreateModel extends Command
 
         namespace App\Models;
 
+        use Lib\Model\Model;
+
         class $name extends Model
         {
             protected \$table = '$pluralName';
@@ -27,10 +29,10 @@ class CreateModel extends Command
         EOD;
 
         if (file_exists($filename)) {
-            $this->error('El modelo ya existe!');
+            $this->error('The model already exists!');
         } else {
             file_put_contents($filename, $stub);
-            $this->info('Modelo creado correctamente.');
+            $this->info('Model created correctly.');
         }
     }
 

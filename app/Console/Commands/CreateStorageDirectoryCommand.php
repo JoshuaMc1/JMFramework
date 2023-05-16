@@ -4,11 +4,11 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class CreateStorageDirectory extends Command
+class CreateStorageDirectoryCommand extends Command
 {
     protected $signature = 'storage:directory';
 
-    protected $description = 'Crear un directorio de almacenamiento público.';
+    protected $description = 'Create a public storage directory.';
 
     public function handle()
     {
@@ -19,14 +19,14 @@ class CreateStorageDirectory extends Command
         $directoryPath = $publicPath . '/storage';
 
         if (is_dir($directoryPath)) {
-            $this->error('La carpeta ya existe.');
+            $this->error('The folder already exists.');
             return;
         }
 
         if (mkdir($directoryPath, 0666)) {
-            $this->info('La carpeta se ha creado correctamente.');
+            $this->info('The folder has been successfully created.');
         } else {
-            $this->error('Ha ocurrido un error al crear la carpeta.');
+            $this->error('An error occurred while creating the folder.');
         }
     }
 }

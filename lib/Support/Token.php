@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 class Token
 {
     protected const DEFAULT_ALGORITHM = 'sha256';
-    protected const DEFAULT_EXPIRY = EXPIRY_TOKEN;
+    protected const DEFAULT_EXPIRY = TOKEN_EXPIRY;
     protected const DEFAULT_LENGTH = TOKEN_LENGTH;
 
     protected static $key = HASH_KEY;
@@ -18,10 +18,15 @@ class Token
         $algorithm = $algorithm ?? self::DEFAULT_ALGORITHM;
         $header = ['alg' => $algorithm];
         $timestamp = time();
+        $data = [
+            'payload' => $payload,
+            'timestamp' => $timestamp,
+            'expiry' => $timestamp + $expiry,
+        ];
         $encodedHeader = base64_encode(json_encode($header));
-        $encodedPayload = base64_encode(json_encode($payload));
-        $signature = hash_hmac($algorithm, "$encodedHeader.$encodedPayload.$timestamp.$expiry", self::$key);
-        return "$encodedHeader.$encodedPayload.$timestamp.$expiry.$signature";
+        $encodedPayload = base64_encode(json_encode($data));
+        $signature = hash_hmac($algorithm, "$encodedHeader.$encodedPayload", self::$key);
+        return "$encodedHeader.$encodedPayload.$signature";
     }
 
     public static function createBase64Token(int $length = self::DEFAULT_LENGTH)
@@ -31,34 +36,58 @@ class Token
 
     public static function createBinaryToken(int $length = self::DEFAULT_LENGTH)
     {
-        return;
-        return hex2bin(Str::random($length));
+        return bin2hex(Str::random($length));
     }
 
     public static function createPlainTextToken(int $length = self::DEFAULT_LENGTH)
     {
-        return Str::uuid() . "|" . Str::random($length);
+        return uniqid() . "|" . Str::random($length);
     }
 
     public static function decodeToken(string $token): array
     {
-        [$encodedHeader, $encodedPayload, $timestamp, $expiry, $signature] = explode('.', $token);
-        $header = json_decode(base64_decode($encodedHeader), true);
-        $payload = json_decode(base64_decode($encodedPayload), true);
-        return [
-            'header' => $header,
-            'payload' => $payload,
-            'timestamp' => $timestamp,
-            'expiry' => $expiry,
-            'signature' => $signature,
-        ];
-    }
+        $parts = explode('.', $token);
 
-    public static function verifyToken(string $token, string $algorithm = null): bool
-    {
-        $algorithm = $algorithm ?? self::DEFAULT_ALGORITHM;
-        $decoded = self::decodeToken($token);
-        $signature = hash_hmac($algorithm, "{$decoded['header']}.{$decoded['payload']}.{$decoded['timestamp']}.{$decoded['expiry']}", self::$key);
-        return hash_equals($decoded['signature'], $signature);
+        if (count($parts) !== 3) {
+            return [
+                'status' => false,
+                'message' => 'Invalid token format',
+            ];
+        }
+
+        [$encodedHeader, $encodedPayload, $signature] = $parts;
+
+        $header = json_decode(base64_decode($encodedHeader), true);
+        $data = json_decode(base64_decode($encodedPayload), true);
+
+        if (empty($header) || empty($data) || empty($data['timestamp']) || empty($data['expiry']) || empty($signature)) {
+            return [
+                'status' => false,
+                'message' => 'Invalid token format',
+            ];
+        }
+
+        if (hash_hmac($header['alg'], "$encodedHeader.$encodedPayload", self::$key) !== $signature) {
+            return [
+                'status' => false,
+                'message' => 'Invalid token signature',
+            ];
+        }
+
+        $now = time();
+
+        if ($data['expiry'] <= $now) {
+            return [
+                'status' => false,
+                'message' => 'Token has expired',
+            ];
+        }
+
+        return [
+            'status' => true,
+            'payload' => $data['payload'],
+            'timestamp' => $data['timestamp'],
+            'expiry' => $data['expiry'],
+        ];
     }
 }
