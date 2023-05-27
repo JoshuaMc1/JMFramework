@@ -2,7 +2,8 @@
 
 namespace Lib\Connection;
 
-use Lib\Http\ErrorHandler;
+use Lib\Exception\ConnectionExceptions\DatabaseConnectionException;
+use Lib\Exception\ExceptionHandler;
 use mysqli;
 
 class Connection
@@ -11,6 +12,8 @@ class Connection
 
     public function __construct()
     {
+        // error_reporting(E_ERROR);
+        // ini_set('display_errors', 0);
         $this->connect();
     }
 
@@ -20,12 +23,12 @@ class Connection
             $this->connection = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
 
             if ($this->connection->connect_error) {
-                ErrorHandler::renderError(500, 'Internal Server Error', $this->connection->connect_error);
-                die();
+                throw new DatabaseConnectionException($this->connection->connect_errno, 'Database Connection Error', $this->connection->connect_error);
             }
+        } catch (DatabaseConnectionException $exception) {
+            ExceptionHandler::handleException($exception);
         } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
-            die();
+            throw new DatabaseConnectionException($th->getCode(), 'Internal Server Error', $th->getMessage());
         }
     }
 

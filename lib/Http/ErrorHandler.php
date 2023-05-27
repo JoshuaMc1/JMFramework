@@ -3,11 +3,10 @@
 namespace Lib\Http;
 
 use Lib\Templates\Templates;
-use function Lib\Global\{asset, response};
 
 class ErrorHandler
 {
-    public static function renderError($errorCode = 404, $errorTitle = 'Page Not Found', $errorMessage = 'Sorry, we couldn’t find the page you’re looking for.')
+    public static function renderErrorHtml($errorCode = 404, $errorTitle = 'Page Not Found', $errorMessage = 'Sorry, we couldn’t find the page you’re looking for.')
     {
         $template = new Templates();
         $resource = asset('css/app.css');
@@ -20,12 +19,26 @@ class ErrorHandler
         ]);
     }
 
-    public static function renderErrorJson($errorCode = 404, $errorTitle = 'Page Not Found', $errorMessage = 'Sorry, we couldn’t find the page you’re looking for.')
+    public static function renderErrorJson($errorCode = 200, $errorTitle = 'Page Not Found', $errorMessage = 'Sorry, we couldn’t find the page you’re looking for.')
     {
-        return response()->json([
+        echo response()->json([
             'ERROR_CODE' => $errorCode,
             'ERROR_TITLE' => $errorTitle,
             'ERROR_MESSAGE' => $errorMessage
         ], $errorCode)->send();
+
+        exit;
+    }
+
+    public static function renderError($errorCode = 404, $errorTitle = 'Page Not Found', $errorMessage = 'Sorry, we couldn’t find the page you’re looking for.')
+    {
+        $contentType = isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : '';
+        $contentType = strtolower($contentType);
+
+        if (strpos($contentType, 'application/json') !== false) {
+            self::renderErrorJson($errorCode, $errorTitle, $errorMessage);
+        } else {
+            self::renderErrorHtml($errorCode, $errorTitle, $errorMessage);
+        }
     }
 }

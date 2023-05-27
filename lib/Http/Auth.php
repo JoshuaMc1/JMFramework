@@ -3,14 +3,17 @@
 namespace Lib\Http;
 
 use App\Models\User;
+use Lib\Exception\ExceptionHandler;
+use Lib\Model\PersonalAccessToken;
 use Lib\Model\Session as SessionModel;
 use Lib\Support\Hash;
 use Lib\Http\Cookie;
 use Lib\Http\Session;
+use Lib\Support\Token;
 
 class Auth
 {
-    public static function attempt(string $email, string $password)
+    public static function attemptWeb(string $email, string $password)
     {
         try {
             $user = User::where('email', $email)->first();
@@ -35,11 +38,40 @@ class Auth
 
             return true;
         } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+            ExceptionHandler::handleException($th);
         }
     }
 
-    public static function logout()
+    public static function attemptAPI(string $email, string $password)
+    {
+        try {
+            $user = User::where('email', $email)->first();
+
+            if (!$user || !Hash::verify($password, $user['password'])) {
+                return false;
+            }
+
+            $personalAccessToken = new PersonalAccessToken();
+
+            $accessToken = [
+                'name' => 'API Token',
+                'token' => Hash::encrypt(Token::createToken(['user_id' => $user['id']])),
+                'last_used_at' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            $personalAccessToken = $personalAccessToken->create($accessToken);
+
+            Cookie::set('api_token', $accessToken['token']);
+
+            return $accessToken;
+        } catch (\Throwable $th) {
+            ExceptionHandler::handleException($th);
+        }
+    }
+
+    public static function logoutWeb()
     {
         try {
             $session = SessionModel::find(Session::get('session_id'));
@@ -50,11 +82,32 @@ class Auth
 
             Cookie::remove('session_id');
         } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+            ExceptionHandler::handleException($th);
         }
     }
 
-    public static function check(): bool
+    public static function logoutAPI()
+    {
+        try {
+            $apiToken = Cookie::get('api_token');
+
+            if (!$apiToken) {
+                return false;
+            }
+
+            $personalAccessToken = new PersonalAccessToken();
+
+            $personalAccessToken->where('token', $apiToken)->first();
+
+            Cookie::remove('api_token');
+
+            return true;
+        } catch (\Throwable $th) {
+            ExceptionHandler::handleException($th);
+        }
+    }
+
+    public static function checkWeb(): bool
     {
         try {
             $sessionId = Cookie::get('session_id');
@@ -86,14 +139,44 @@ class Auth
 
             return true;
         } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+            ExceptionHandler::handleException($th);
         }
     }
 
-    public static function user()
+    public static function checkAPI(): bool
     {
         try {
-            if (!self::check()) {
+            $apiToken = Cookie::get('api_token');
+
+            if (!$apiToken) {
+                return false;
+            }
+
+            $accessToken = PersonalAccessToken::find($apiToken);
+
+            if (!$accessToken) {
+                Cookie::remove('api_token');
+                return false;
+            }
+
+            $maxLifetime = $accessToken['expires_at'];
+
+            if (time() > strtotime($maxLifetime)) {
+                $accessToken->delete();
+                Cookie::remove('api_token');
+                return false;
+            }
+
+            return true;
+        } catch (\Throwable $th) {
+            ExceptionHandler::handleException($th);
+        }
+    }
+
+    public static function userWeb()
+    {
+        try {
+            if (!self::checkWeb()) {
                 return null;
             }
 
@@ -101,7 +184,7 @@ class Auth
             $session = SessionModel::find($sessionId);
 
             if (!$session) {
-                self::logout();
+                self::logoutWeb();
                 Session::setFlash('error', 'The session with the ID ' . $sessionId . ' does not exist.');
                 return null;
             }
@@ -109,14 +192,44 @@ class Auth
             $user = User::find($session['user_id']);
 
             if (!$user) {
-                self::logout();
+                self::logoutWeb();
                 Session::setFlash('error', 'The user with the ID ' . $session['user_id'] . ' does not exist.');
                 return null;
             }
 
             return $user;
         } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+            ExceptionHandler::handleException($th);
+        }
+    }
+
+    public static function userAPI()
+    {
+        try {
+            if (!self::checkAPI()) {
+                return null;
+            }
+
+            $apiToken = Cookie::get('api_token');
+            $accessToken = PersonalAccessToken::find($apiToken);
+
+            if (!$accessToken) {
+                self::logoutAPI();
+                Session::setFlash('error', 'The API token with ID ' . $apiToken . ' does not exist.');
+                return null;
+            }
+
+            $user = User::find($accessToken['user_id']);
+
+            if (!$user) {
+                self::logoutAPI();
+                Session::setFlash('error', 'The user with the ID ' . $accessToken['user_id'] . ' does not exist.');
+                return null;
+            }
+
+            return $user;
+        } catch (\Throwable $th) {
+            ExceptionHandler::handleException($th);
         }
     }
 }

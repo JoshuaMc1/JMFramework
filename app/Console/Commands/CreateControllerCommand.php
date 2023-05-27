@@ -12,82 +12,133 @@ class CreateControllerCommand extends Command
 
     public function handle()
     {
-        $name = $this->argument('name');
-        $filename = dirname(__DIR__, 3) . "/app/Controllers/{$name}.php";
+        try {
+            $name = $this->argument('name');
+            $filename = $this->getControllerFilePath($name);
 
-        $resource = $this->option('r');
+            $resource = $this->option('r');
 
-        if (file_exists($filename)) {
-            $this->error('The controller already exists!');
-        } else {
-            $stub = $resource ? $this->getResourceControllerStub($name) : $this->getControllerStub($name);
-            file_put_contents($filename, $stub);
-            $this->info('Controller successfully created.');
+            $directory = $this->getDirectoryFromFilePath($filename);
+            $this->createDirectory($directory);
+
+            if (file_exists($filename)) {
+                $this->error('The controller already exists!');
+            } else {
+                $stub = $resource ? $this->getResourceControllerStub($name) : $this->getControllerStub($name);
+                file_put_contents($filename, $stub);
+                $this->info('Controller successfully created.');
+            }
+        } catch (\Throwable $th) {
+            $this->error($th->getMessage());
         }
+    }
+
+    protected function getControllerFilePath($name)
+    {
+        $controllerPath = $this->getControllerPath($name);
+        $filename = dirname(__DIR__, 3) . "/app/Controllers/{$controllerPath}.php";
+        return $filename;
+    }
+
+    protected function getDirectoryFromFilePath($filename)
+    {
+        return dirname($filename);
+    }
+
+    protected function createDirectory($directory)
+    {
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+    }
+
+    protected function getControllerPath($name)
+    {
+        $name = str_replace('\\', '/', $name);
+        $name = ltrim($name, '/');
+
+        return $name;
+    }
+
+    private function getNamespace($name)
+    {
+        $parts = explode('/', $name);
+        $directory = count($parts) > 1 ? '\\' . $parts[0] : '';
+        return $directory;
+    }
+
+    private function getClassName($name)
+    {
+        $parts = explode('/', $name);
+        return ucfirst(end($parts));
     }
 
     protected function getControllerStub($name)
     {
-        return addcslashes(<<<EOD
-        <?php
+        $namespace = $this->getNamespace($name);
+        $className = $this->getClassName($name);
 
-        namespace App\Controllers;
+        return <<<EOD
+<?php
 
-        use function Lib\Global\view;
+namespace App\Controllers{$namespace};
 
-        class $name
-        {
-            //
-        }
-        EOD, "\v");
+class $className
+{
+    //
+}
+EOD;
     }
 
     protected function getResourceControllerStub($name)
     {
-        return addcslashes(<<<EOD
-        <?php
+        $namespace = $this->getNamespace($name);
+        $className = $this->getClassName($name);
 
-        namespace App\Controllers;
+        return <<<EOD
+<?php
 
-        use function Lib\Global\view;
+namespace App\Controllers{$namespace};
 
-        class $name
-        {
-            public function index()
-            {
-                //
-            }
+use Lib\Http\Request;
 
-            public function create()
-            {
-                //
-            }
+class $className
+{
+    public function index()
+    {
+        //
+    }
 
-            public function store(\$request)
-            {
-                //
-            }
+    public function create()
+    {
+        //
+    }
 
-            public function show(\$id)
-            {
-                //
-            }
+    public function store(Request \$request)
+    {
+        //
+    }
 
-            public function edit(\$id)
-            {
-                //
-            }
+    public function show(\$id)
+    {
+        //
+    }
 
-            public function update(\$request, \$id)
-            {
-                //
-            }
+    public function edit(\$id)
+    {
+        //
+    }
 
-            public function destroy(\$id)
-            {
-                //
-            }
-        }
-        EOD, "\v");
+    public function update(Request \$request, \$id)
+    {
+        //
+    }
+
+    public function destroy(\$id)
+    {
+        //
+    }
+}
+EOD;
     }
 }

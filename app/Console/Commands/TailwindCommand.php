@@ -13,7 +13,7 @@ class TailwindCommand extends Command
     public function handle()
     {
         $this->info('Generating Tailwind CSS...');
-        exec('npx tailwindcss -i resources/css/app.css -o public/resources/css/app.css --watch');
+        exec('npx tailwindcss -i resources/css/app.css -o public/css/app.css --watch');
         $this->info('Tailwind CSS generated successfully!');
     }
 }

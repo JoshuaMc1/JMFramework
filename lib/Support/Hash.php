@@ -29,14 +29,14 @@ class Hash
         return hash_equals(self::make($value, $options), $hash);
     }
 
-    public static function encrypt(string $value)
+    public static function encrypt(string $value): string
     {
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('AES-256-CBC'));
         $encrypted = openssl_encrypt($value, 'AES-256-CBC', self::DEFAULT_HASH_KEY, 0, $iv);
         return base64_encode($encrypted . ':' . $iv);
     }
 
-    public static function decrypt(string $value)
+    public static function decrypt(string $value): string
     {
         $value = base64_decode($value);
         [$encrypted, $iv] = explode(':', $value, 2);

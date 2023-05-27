@@ -2,7 +2,14 @@
 
 namespace Lib\Support;
 
-use Lib\Http\ErrorHandler;
+use Lib\Exception\ExceptionHandler;
+use Lib\Exception\StorageExceptions\{
+    FileNotFoundException,
+    FileUploadException,
+    MimeTypeException,
+    FileDeleteException,
+    FileSizeException
+};
 
 class Storage
 {
@@ -25,9 +32,9 @@ class Storage
                 return $subdirectory ? $subdirectory . '/' . $filename : $filename;
             }
 
-            return false;
-        } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+            throw new FileUploadException();
+        } catch (FileUploadException | \Throwable $th) {
+            ExceptionHandler::handleException($th);
         }
     }
 
@@ -41,9 +48,9 @@ class Storage
                 return true;
             }
 
-            return false;
-        } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+            throw new FileDeleteException();
+        } catch (FileDeleteException | \Throwable $th) {
+            ExceptionHandler::handleException($th);
         }
     }
 
@@ -60,16 +67,20 @@ class Storage
 
             return $http . '://' . $host . '/storage/' . $path;
         } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+            ExceptionHandler::handleException($th);
         }
     }
 
     public static function has($file)
     {
         try {
-            return isset($file['name'], $file['tmp_name']);
-        } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+            if (!isset($file['name'], $file['tmp_name'])) {
+                throw new FileUploadException('Invalid file');
+            }
+
+            return true;
+        } catch (FileUploadException | \Throwable $th) {
+            ExceptionHandler::handleException($th);
         }
     }
 
@@ -77,9 +88,14 @@ class Storage
     {
         try {
             $targetPath = self::getTargetPath($url);
-            return file_exists($targetPath);
-        } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+
+            if (file_exists($targetPath)) {
+                return true;
+            }
+
+            throw new FileNotFoundException();
+        } catch (FileNotFoundException | \Throwable $th) {
+            ExceptionHandler::handleException($th);
         }
     }
 
@@ -87,9 +103,18 @@ class Storage
     {
         try {
             $targetPath = self::getTargetPath($url);
-            return filesize($targetPath);
-        } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+
+            if (file_exists($targetPath)) {
+                if (filesize($targetPath) === 0) {
+                    throw new FileSizeException();
+                } else {
+                    return filesize($targetPath);
+                }
+            }
+
+            throw new FileNotFoundException();
+        } catch (FileNotFoundException | \Throwable $th) {
+            ExceptionHandler::handleException($th);
         }
     }
 
@@ -97,12 +122,22 @@ class Storage
     {
         try {
             $targetPath = self::getTargetPath($url);
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $mimeType = finfo_file($finfo, $targetPath);
-            finfo_close($finfo);
-            return $mimeType;
-        } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+
+            if (file_exists($targetPath)) {
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mimeType = finfo_file($finfo, $targetPath);
+
+                if (empty($mimeType)) {
+                    throw new MimeTypeException();
+                }
+
+                finfo_close($finfo);
+                return $mimeType;
+            }
+
+            throw new FileNotFoundException();
+        } catch (FileNotFoundException | MimeTypeException | \Throwable $th) {
+            ExceptionHandler::handleException($th);
         }
     }
 

@@ -11,7 +11,9 @@
     ],
     "require": {
         "illuminate/console": "10.*",
-        "symfony/event-dispatcher": "6.3.x-dev"
+        "symfony/event-dispatcher": "6.3.x-dev",
+        "illuminate/view": "10.x-dev",
+        "illuminate/filesystem": "10.x-dev"
     },
     "license": "GPL-3.0-or-later",
     "autoload": {

@@ -3,8 +3,9 @@
 namespace Lib\Http;
 
 use App\Models\User;
+use Lib\Exception\ExceptionHandler;
 use Lib\Model\Session as SessionModel;
-use Lib\Support\Token;
+use Lib\Http\Auth;
 
 class Request
 {
@@ -28,40 +29,20 @@ class Request
     public function user()
     {
         try {
-            $header = $this->getHeader('Authorization');
+            $webUser = Auth::userWeb();
+            $apiUser = Auth::userAPI();
 
-            if (!$header) {
-                return null;
+            if ($webUser !== null) {
+                return $webUser;
             }
 
-            $parts = explode(' ', $header);
-            if (count($parts) === 2 && $parts[0] === 'Bearer') {
-                $token = $parts[1];
-
-                $decoded = Token::decodeToken($token);
-
-                if (!$decoded['status']) {
-                    return null;
-                }
-
-                $user = User::find($decoded['payload']);
-
-                if (!$user) {
-                    return null;
-                }
-
-                return $user;
-            } else {
-                $token = $header;
-                $decoded = Token::decodeToken($token);
-                if (!$decoded['status']) {
-                    return null;
-                }
-
-                return $decoded['payload'];
+            if ($apiUser !== null) {
+                return $apiUser;
             }
+
+            return null;
         } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+            ExceptionHandler::handleException($th);
         }
     }
 
@@ -90,7 +71,7 @@ class Request
 
             return $user;
         } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+            ExceptionHandler::handleException($th);
         }
     }
 

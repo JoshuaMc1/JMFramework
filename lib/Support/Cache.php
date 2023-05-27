@@ -2,6 +2,7 @@
 
 namespace Lib\Support;
 
+use Lib\Exception\ExceptionHandler;
 use Lib\Support\CacheManager\CacheInterface;
 
 class Cache implements CacheInterface
@@ -122,12 +123,16 @@ class Cache implements CacheInterface
 
     private static function validateKey(string $key): string
     {
-        $key = trim($key);
+        try {
+            $key = trim($key);
 
-        if ($key === '') {
-            throw new \InvalidArgumentException('Cache key cannot be empty.');
+            if ($key === '') {
+                throw new \Exception('Cache key cannot be empty.', 404);
+            }
+
+            return $key;
+        } catch (\Throwable $th) {
+            ExceptionHandler::handleException($th);
         }
-
-        return $key;
     }
 }

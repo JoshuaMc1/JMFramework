@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.bg-fw-principal {
+    background-color: #4f5d75 !important;
+}
+
+.bg-fw-secondary {
+    background-color: #2d3142 !important;
+}

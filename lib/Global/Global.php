@@ -1,9 +1,15 @@
 <?php
 
-namespace Lib\Global;
-
 use Lib\Http\ErrorHandler;
 use Lib\Http\Response;
+use Illuminate\Container\Container;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\View\Compilers\BladeCompiler;
+use Illuminate\View\Engines\CompilerEngine;
+use Illuminate\View\Engines\EngineResolver;
+use Illuminate\View\Factory;
+use Illuminate\View\FileViewFinder;
 
 function dd($var)
 {
@@ -68,39 +74,28 @@ function dd($var)
     exit;
 }
 
-function view(string $route, array $data = []): string
+function view($view, $data = [])
 {
     try {
-        extract($data);
+        $basePath = __DIR__ . '/../..';
+        $viewPath = $basePath . '/resources/views/';
+        $cachePath = $basePath . '/storage/.cache/views';
 
-        $viewPath = str_replace('.', '/', $route);
-        $viewFile = "../resources/views/{$viewPath}.php";
+        $filesystem = new Filesystem();
+        $viewFinder = new FileViewFinder($filesystem, [$viewPath]);
+        $eventDispatcher = new Dispatcher(new Container());
 
-        if (!file_exists($viewFile)) {
-            header('HTTP/1.1 404 Not Found');
-            ErrorHandler::renderError(404, 'Not Found', 'An error occurred while loading the view. Please check if the path is correct.');
-        }
+        $resolver = new EngineResolver();
+        $compiler = new BladeCompiler($filesystem, $cachePath);
 
-        ob_start();
-        include $viewFile;
-        return ob_get_clean();
-    } catch (\Throwable $th) {
-        ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
-    }
-}
+        $resolver->register('blade', function () use ($compiler) {
+            return new CompilerEngine($compiler);
+        });
 
-function compact_view(string $route, ...$variables): string
-{
-    try {
-        $data = [];
-        foreach ($variables as $variable) {
-            if (is_string($variable) && isset($$variable)) {
-                $data[$variable] = $$variable;
-            } elseif (is_array($variable)) {
-                $data = array_merge($data, $variable);
-            }
-        }
-        return view($route, $data);
+        $factory = new Factory($resolver, $viewFinder, $eventDispatcher);
+        $factory->addExtension('blade', 'blade');
+
+        return $factory->make($view, $data)->render();
     } catch (\Throwable $th) {
         ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
     }
@@ -108,7 +103,7 @@ function compact_view(string $route, ...$variables): string
 
 function asset($path = '')
 {
-    return ($_SERVER['REQUEST_SCHEME'] ?? 'http') . "://" . $_SERVER['HTTP_HOST'] . "/resources/" . ltrim($path, '/');
+    return ($_SERVER['REQUEST_SCHEME'] ?? 'http') . "://" . $_SERVER['HTTP_HOST'] . "/" . ltrim($path, '/');
 }
 
 function url($path = '')
@@ -149,9 +144,13 @@ function redirect(string $url, int $status = 302, array $headers = [])
     }
 }
 
-function compact(array $array)
+function isJsonRequest(): bool
 {
-    return array_filter($array, function ($value) {
-        return $value !== null;
-    });
+    $acceptHeader = $_SERVER['HTTP_ACCEPT'] ?? '';
+    return strpos($acceptHeader, 'application/json') !== false;
+}
+
+function now(): string
+{
+    return date('Y-m-d H:i:s');
 }

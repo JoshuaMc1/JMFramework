@@ -41,7 +41,7 @@ class Response
 
         http_response_code($this->statusCode);
 
-        echo $this->body;
+        return $this->body;
     }
 
     public function getStatusCode()
@@ -54,7 +54,12 @@ class Response
         return $this->body;
     }
 
-    public static function json($data, $statusCode = 200, $headers = [])
+    public function getHeader($name)
+    {
+        return $this->headers[$name];
+    }
+
+    public static function json($data = [], $statusCode = 200, $headers = [])
     {
         $body = json_encode($data);
         $headers['Content-Type'] = 'application/json';

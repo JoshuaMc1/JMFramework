@@ -12,33 +12,94 @@ class CreateModelCommand extends Command
 
     public function handle()
     {
-        $name = $this->argument('name');
-        $filename = dirname(__DIR__, 3) . "/app/Models/{$name}.php";
-        $pluralName = strtolower($this->pluralize($name));
-        $stub = <<<EOD
-        <?php
+        try {
+            $name = $this->argument('name');
+            $filename = $this->getModelFilePath($name);
 
-        namespace App\Models;
+            $directory = $this->getDirectoryFromFilePath($filename);
+            $this->createDirectory($directory);
 
-        use Lib\Model\Model;
+            $namespace = $this->getNamespace($name);
+            $tableName = $this->pluralize($this->getTableName($name));
+            $className = $this->getClassName($name);
+            $stub = $this->getModelStub($namespace, $className, $tableName);
 
-        class $name extends Model
-        {
-            protected \$table = '$pluralName';
-        }
-        EOD;
-
-        if (file_exists($filename)) {
-            $this->error('The model already exists!');
-        } else {
-            file_put_contents($filename, $stub);
-            $this->info('Model created correctly.');
+            if (file_exists($filename)) {
+                $this->error('The model already exists!');
+            } else {
+                file_put_contents($filename, $stub);
+                $this->info('Model created correctly.');
+            }
+        } catch (\Throwable $th) {
+            $this->error($th->getMessage());
         }
     }
 
-    function pluralize($word)
+    protected function getModelFilePath($name)
     {
-        $irregulars = array(
+        $modelPath = $this->getModelPath($name);
+        $filename = dirname(__DIR__, 3) . "/app/Models/{$modelPath}.php";
+        return $filename;
+    }
+
+    protected function getDirectoryFromFilePath($filename)
+    {
+        return dirname($filename);
+    }
+
+    protected function createDirectory($directory)
+    {
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+    }
+
+    protected function getModelPath($name)
+    {
+        $name = str_replace('\\', '/', $name);
+        $name = ltrim($name, '/');
+
+        return $name;
+    }
+
+    protected function getModelStub($namespace, $className, $tableName)
+    {
+        return <<<EOD
+<?php
+
+namespace App\Models{$namespace};
+
+use Lib\Model\Model;
+
+class $className extends Model
+{
+    protected \$table = '$tableName';
+}
+EOD;
+    }
+
+    protected function getNamespace($name)
+    {
+        $parts = explode('/', $name);
+        $directory = count($parts) > 1 ? '\\' . implode('\\', array_slice($parts, 0, -1)) : '';
+        return $directory;
+    }
+
+    protected function getTableName($name)
+    {
+        $parts = explode('/', $name);
+        return strtolower(end($parts));
+    }
+
+    protected function getClassName($name)
+    {
+        $parts = explode('/', $name);
+        return ucfirst(end($parts));
+    }
+
+    protected function pluralize($word)
+    {
+        $irregulars = [
             'man' => 'men',
             'woman' => 'women',
             'child' => 'children',
@@ -47,18 +108,22 @@ class CreateModelCommand extends Command
             'person' => 'people',
             'gentleman' => 'gentlemen',
             'knife' => 'knives'
-        );
+        ];
 
-        $last_char = substr($word, -1);
+        $lastChar = substr($word, -1);
 
         if (array_key_exists($word, $irregulars)) {
             return $irregulars[$word];
-        } elseif ($last_char == 'y') {
-            return substr($word, 0, -1) . 'ies';
-        } elseif (in_array($last_char, array('s', 'x', 'z'))) {
-            return $word . 'es';
-        } else {
-            return $word . 's';
         }
+
+        if ($lastChar == 'y') {
+            return substr($word, 0, -1) . 'ies';
+        }
+
+        if (in_array($lastChar, ['s', 'x', 'z'])) {
+            return $word . 'es';
+        }
+
+        return $word . 's';
     }
 }

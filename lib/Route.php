@@ -3,7 +3,15 @@
 namespace Lib;
 
 use App\Middleware\Middleware;
-use Lib\Http\ErrorHandler;
+use Lib\Exception\ExceptionHandler;
+use Lib\Exception\RouteExceptions\{
+    MiddlewareException,
+    PageNotFoundException,
+    InternalServerErrorException,
+    InvalidRouteConfigurationException,
+    MethodNotAllowedException
+};
+use Lib\Http\Request;
 
 class Route
 {
@@ -20,31 +28,37 @@ class Route
     public static function get($uri, $callback)
     {
         self::addRoute(self::GET_METHOD, $uri, $callback);
+        return new static();
     }
 
     public static function post($uri, $callback)
     {
         self::addRoute(self::POST_METHOD, $uri, $callback);
+        return new static();
     }
 
     public static function put($uri, $callback)
     {
         self::addRoute(self::PUT_METHOD, $uri, $callback);
+        return new static();
     }
 
     public static function patch($uri, $callback)
     {
         self::addRoute(self::PATCH_METHOD, $uri, $callback);
+        return new static();
     }
 
     public static function delete($uri, $callback)
     {
         self::addRoute(self::DELETE_METHOD, $uri, $callback);
+        return new static();
     }
 
     public static function options($uri, $callback)
     {
         self::addRoute(self::OPTIONS_METHOD, $uri, $callback);
+        return new static();
     }
 
     public static function middleware($middlewares)
@@ -53,9 +67,15 @@ class Route
             $route = new static();
             $route::$middlewares = $middlewares;
             return $route;
-        } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+        } catch (\Throwable  $th) {
+            ExceptionHandler::handleException(new MiddlewareException($th->getMessage()));
         }
+    }
+
+    public function addMiddlewareToRoute($middlewares)
+    {
+        $this::$middlewares = $middlewares;
+        return $this;
     }
 
     public static function group(array $middlewares, callable $callback)
@@ -66,7 +86,7 @@ class Route
             $callback($route);
             $route::$middlewares = [];
         } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+            ExceptionHandler::handleException(new MiddlewareException($th->getMessage()));
         }
     }
 
@@ -79,7 +99,7 @@ class Route
             $match = self::match($uri, $routes);
 
             if (!$match) {
-                ErrorHandler::renderError(404, 'Page Not Found', 'Sorry, we couldn’t find the page you’re looking for.');
+                throw new PageNotFoundException();
             }
 
             $middlewares = $match['middlewares'] ?? [];
@@ -93,20 +113,20 @@ class Route
             };
 
             $response = null;
+            $request = new Request();
 
             foreach ($middlewares as $middleware) {
                 $middlewareInstance = new $middleware();
-                $response = $middlewareInstance->handle($next);
+                $response = $middlewareInstance->handle($next, $request);
             }
 
             if (is_array($response) || is_object($response)) {
-                header('Content-Type: application/json');
-                echo json_encode($response);
+                echo response()->json($response)->send();
             } else {
                 echo $response ?? '';
             }
-        } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+        } catch (PageNotFoundException | InternalServerErrorException | MethodNotAllowedException $e) {
+            ExceptionHandler::handleException($e);
         }
     }
 
@@ -124,9 +144,10 @@ class Route
                     ];
                 }
             }
-            return false;
-        } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+
+            throw new PageNotFoundException();
+        } catch (PageNotFoundException $e) {
+            ExceptionHandler::handleException($e);
         }
     }
 
@@ -137,13 +158,30 @@ class Route
             $params = $match['params'];
 
             if (is_callable($callback)) {
-                return $callback(...$params);
+                $reflector = new \ReflectionFunction($callback);
+                $parameters = $reflector->getParameters();
+                $args = [];
+
+                foreach ($parameters as $parameter) {
+                    $className = $parameter->getType()->getName();
+
+                    if ($className === Request::class) {
+                        $args[] = new Request();
+                    } else {
+                        $args[] = null;
+                    }
+                }
+
+                return call_user_func_array($callback, $args);
             } elseif (is_array($callback)) {
                 $controller = new $callback[0];
-                return $controller->{$callback[1]}(...$params);
+                $request = new Request();
+                return call_user_func_array([$controller, $callback[1]], array_merge([$request], $params));
+            } else {
+                throw new InvalidRouteConfigurationException('Invalid callback configuration');
             }
-        } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
+        } catch (InvalidRouteConfigurationException $th) {
+            ExceptionHandler::handleException($th);
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace Lib\Http;
 
+use Lib\Exception\ExceptionHandler;
 use Lib\Model\Session as SessionModel;
 
 class Session
@@ -25,7 +26,7 @@ class Session
                 session_start();
             }
         } catch (\Throwable $th) {
-            ErrorHandler::renderError(500, 'Internal server error', $th->getMessage());
+            ExceptionHandler::handleException($th);
         }
     }
 

@@ -24,9 +24,21 @@ class CreateStorageDirectoryCommand extends Command
         }
 
         if (mkdir($directoryPath, 0666)) {
+            $gitignore = fopen($directoryPath . '/.gitignore', 'w');
+            fwrite($gitignore, $this->getStub());
             $this->info('The folder has been successfully created.');
         } else {
             $this->error('An error occurred while creating the folder.');
         }
+    }
+
+    protected function getStub()
+    {
+        $stub = <<<EOD
+        *
+        !.gitignore
+        EOD;
+
+        return $stub;
     }
 }

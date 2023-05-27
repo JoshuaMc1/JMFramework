@@ -25,7 +25,7 @@ class RunServerCommand extends Command
 
         $this->info("Server running at http://$host:$port");
 
-        $tailwind_command = 'npx tailwindcss -i resources/css/app.css -o public/resources/css/app.css --watch';
+        $tailwind_command = 'npx tailwindcss -i resources/css/app.css -o public/css/app.css --watch';
         $tailwind_process = popen($tailwind_command, "r");
 
         if ($tailwind_process === false) {
