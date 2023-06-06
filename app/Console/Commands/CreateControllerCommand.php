@@ -81,7 +81,7 @@ class CreateControllerCommand extends Command
         return <<<EOD
 <?php
 
-namespace App\Controllers{$namespace};
+namespace App\Http\Controllers\{$namespace};
 
 class $className
 {
@@ -98,7 +98,7 @@ EOD;
         return <<<EOD
 <?php
 
-namespace App\Controllers{$namespace};
+namespace App\Http\Controllers\{$namespace};
 
 use Lib\Http\Request;
 

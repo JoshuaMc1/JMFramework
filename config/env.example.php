@@ -10,8 +10,9 @@ define('DB_PORT', '');
 
 /* Config */
 
-define('HASH_KEY', 'secret-key');
+define('APP_KEY', '');
 define('TOKEN_EXPIRY', 3600);
-define('TOKEN_LENGTH', 32);
+define('TOKEN_LENGTH', 64);
 define('COOKIE_LIFETIME', 86400);
 define('SESSION_LIFETIME', 86400);
+define('FILE_SIZE', 33554432);

@@ -8,7 +8,7 @@ class RunServerCommand extends Command
 {
     protected $signature = 'server';
 
-    protected $description = 'Create local server and running tailwind css compiler';
+    protected $description = 'Create local server.';
 
     public function handle()
     {
@@ -25,15 +25,6 @@ class RunServerCommand extends Command
 
         $this->info("Server running at http://$host:$port");
 
-        $tailwind_command = 'npx tailwindcss -i resources/css/app.css -o public/css/app.css --watch';
-        $tailwind_process = popen($tailwind_command, "r");
-
-        if ($tailwind_process === false) {
-            $this->error("Failed to start Tailwind CSS process");
-            return;
-        }
-
         pclose($server_process);
-        pclose($tailwind_process);
     }
 }

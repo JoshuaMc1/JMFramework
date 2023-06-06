@@ -6,7 +6,7 @@ class Hash
 {
     const DEFAULT_ITERATIONS = 1;
     const DEFAULT_ALGORITHM = 'sha256';
-    const DEFAULT_HASH_KEY = HASH_KEY;
+    const DEFAULT_HASH_KEY = APP_KEY;
 
     public static function make(string $value, array $options = []): string
     {

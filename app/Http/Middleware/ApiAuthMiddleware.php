@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Middleware;
+namespace App\Http\Middleware;
 
 use Lib\Exception\ExceptionHandler;
 use Lib\Exception\RouteExceptions\UnauthorizedAccessException;
-use Lib\Support\Token;
+use Lib\Support\{Token, Hash};
 use Lib\Http\Middleware\MiddlewareInterface;
 use Lib\Http\Request;
 use Lib\Model\PersonalAccessToken;
-use Lib\Support\Hash;
 
 class ApiAuthMiddleware implements MiddlewareInterface
 {

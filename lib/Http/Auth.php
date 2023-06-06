@@ -4,12 +4,9 @@ namespace Lib\Http;
 
 use App\Models\User;
 use Lib\Exception\ExceptionHandler;
-use Lib\Model\PersonalAccessToken;
-use Lib\Model\Session as SessionModel;
-use Lib\Support\Hash;
-use Lib\Http\Cookie;
-use Lib\Http\Session;
-use Lib\Support\Token;
+use Lib\Model\{PersonalAccessToken, Session as SessionModel};
+use Lib\Support\{Hash, Token};
+use Lib\Http\{Cookie, Session};
 
 class Auth
 {

@@ -28,7 +28,7 @@ class CreateMiddlewareCommand extends Command
         return addcslashes(<<<EOD
         <?php
 
-        namespace App\Middleware;
+        namespace App\Http\Middleware;
 
         use Lib\Http\Middleware\MiddlewareInterface;
         use Lib\Http\Request;

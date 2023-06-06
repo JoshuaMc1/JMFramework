@@ -103,12 +103,12 @@ class Request
         return $this->data[$key] ?? null;
     }
 
-    public function getFiles()
+    public function files()
     {
         return $this->files;
     }
 
-    public function getFile($key)
+    public function file($key)
     {
         return $this->files[$key] ?? null;
     }
@@ -136,6 +136,57 @@ class Request
     public function all()
     {
         return $this->data;
+    }
+
+    public function collect()
+    {
+        return collect($this->data);
+    }
+
+    public function input($key = null, $default = null)
+    {
+        if ($key === null) {
+            return $this->data;
+        }
+
+        return $this->data[$key] ?? $default;
+    }
+
+
+    public function query()
+    {
+        return $this->params;
+    }
+
+    public function string($key)
+    {
+        return (string) ($this->data[$key] ?? '');
+    }
+
+    public function boolean($key)
+    {
+        return filter_var($this->data[$key] ?? false, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    public function date($key, $format = 'Y-m-d', $timezone = null)
+    {
+        $value = $this->data[$key] ?? null;
+
+        if ($value === null) {
+            return null;
+        }
+
+        $dateTime = \DateTime::createFromFormat($format, $value);
+
+        if ($dateTime === false) {
+            return null;
+        }
+
+        if ($timezone !== null) {
+            $dateTime->setTimezone(new \DateTimeZone($timezone));
+        }
+
+        return $dateTime;
     }
 
     public function __destruct()

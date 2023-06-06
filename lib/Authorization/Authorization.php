@@ -4,16 +4,20 @@ namespace Lib\Authorization;
 
 use App\Models\User;
 use Lib\Exception\ExceptionHandler;
-use Lib\Exception\AuthorizationExceptions\PermissionCreationException;
-use Lib\Exception\AuthorizationExceptions\PermissionNotFoundException;
-use Lib\Exception\AuthorizationExceptions\RoleCreationException;
-use Lib\Exception\AuthorizationExceptions\UserNotFoundException;
-use Lib\Exception\AuthorizationExceptions\RoleNotFoundException;
-use Lib\Exception\AuthorizationExceptions\UserAlreadyHasPermissionException;
-use Lib\Model\AuthorizationModel\Permission;
-use Lib\Model\AuthorizationModel\Role;
-use Lib\Model\AuthorizationModel\RolePermission;
-use Lib\Model\AuthorizationModel\UserRole;
+use Lib\Exception\AuthorizationExceptions\{
+    PermissionCreationException,
+    PermissionNotFoundException,
+    RoleCreationException,
+    UserNotFoundException,
+    RoleNotFoundException,
+    UserAlreadyHasPermissionException
+};
+use Lib\Model\AuthorizationModel\{
+    Permission,
+    Role,
+    RolePermission,
+    UserRole
+};
 use Lib\Http\Request;
 use Lib\Model\Model;
 

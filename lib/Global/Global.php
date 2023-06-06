@@ -1,19 +1,16 @@
 <?php
 
-use Lib\Http\ErrorHandler;
-use Lib\Http\Response;
+use Lib\Http\{ErrorHandler, Response};
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Compilers\BladeCompiler;
-use Illuminate\View\Engines\CompilerEngine;
-use Illuminate\View\Engines\EngineResolver;
-use Illuminate\View\Factory;
-use Illuminate\View\FileViewFinder;
+use Illuminate\View\Engines\{CompilerEngine, EngineResolver};
+use Illuminate\View\{Factory, FileViewFinder};
 
 function dd($var)
 {
-    echo "<style>
+    $output = "<style>
         .dd-wrapper {
         font-size: 14px;
         line-height: 1.5;
@@ -36,9 +33,7 @@ function dd($var)
         .dd-str {
         color: #d14;
         }
-        .dd-int {
-        color: #4a8;
-        }
+        .dd-int,
         .dd-float {
         color: #4a8;
         }
@@ -50,27 +45,30 @@ function dd($var)
         }
         </style>";
 
-    echo "<div class='dd-wrapper'>";
-    echo "<div class='dd-header'>Dump and Die</div>";
-    echo "<pre>";
+    $output .= "<div class='dd-wrapper'>";
+    $output .= "<div class='dd-header'>Dump and Die</div>";
+    $output .= "<pre>";
 
     if (is_bool($var)) {
-        echo "<span class='dd-type'>bool</span><span class='dd-bool'>" . ($var ? 'true' : 'false') . "</span>";
+        $output .= "<span class='dd-type'>bool</span><span class='dd-bool'>" . ($var ? 'true' : 'false') . "</span>";
     } elseif (is_null($var)) {
-        echo "<span class='dd-type'>null</span><span class='dd-null'>null</span>";
+        $output .= "<span class='dd-type'>null</span><span class='dd-null'>null</span>";
     } elseif (is_int($var)) {
-        echo "<span class='dd-type'>int</span><span class='dd-int'>$var</span>";
+        $output .= "<span class='dd-type'>int</span><span class='dd-int'>$var</span>";
     } elseif (is_float($var)) {
-        echo "<span class='dd-type'>float</span><span class='dd-float'>$var</span>";
+        $output .= "<span class='dd-type'>float</span><span class='dd-float'>$var</span>";
     } elseif (is_string($var)) {
-        echo "<span class='dd-type'>string(" . strlen($var) . ")</span><span class='dd-str'>$var</span>";
+        $output .= "<span class='dd-type'>string(" . strlen($var) . ")</span><span class='dd-str'>$var</span>";
     } else {
+        ob_start();
         var_dump($var);
+        $output .= ob_get_clean();
     }
 
-    echo "</pre>";
-    echo "</div>";
+    $output .= "</pre>";
+    $output .= "</div>";
 
+    echo $output;
     exit;
 }
 

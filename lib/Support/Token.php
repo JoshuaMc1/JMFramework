@@ -10,7 +10,7 @@ class Token
     protected const DEFAULT_EXPIRY = TOKEN_EXPIRY;
     protected const DEFAULT_LENGTH = TOKEN_LENGTH;
 
-    protected static $key = HASH_KEY;
+    protected static $key = APP_KEY;
 
     public static function createToken(array $payload, int $expiry = null, string $algorithm = null): string
     {

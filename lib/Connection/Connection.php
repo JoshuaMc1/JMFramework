@@ -12,8 +12,6 @@ class Connection
 
     public function __construct()
     {
-        // error_reporting(E_ERROR);
-        // ini_set('display_errors', 0);
         $this->connect();
     }
 

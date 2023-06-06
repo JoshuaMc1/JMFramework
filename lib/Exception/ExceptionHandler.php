@@ -7,7 +7,7 @@ use Lib\Http\ErrorHandler;
 
 class ExceptionHandler
 {
-    public static function handleException(Exception $exception)
+    public static function handleException(Exception | \Throwable $exception)
     {
         if ($exception instanceof CustomException) {
             $errorCode = $exception->getErrorCode();
@@ -15,7 +15,7 @@ class ExceptionHandler
             $errorMessage = $exception->getErrorMessage();
         } else {
             $errorCode = $exception->getCode();
-            $errorTitle = 'Error';
+            $errorTitle = 'Error ' . $exception->getCode();
             $errorMessage = $exception->getMessage();
         }
 

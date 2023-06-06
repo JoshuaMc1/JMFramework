@@ -35,6 +35,13 @@ class ErrorHandler
         $contentType = isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : '';
         $contentType = strtolower($contentType);
 
+        if ($contentType === '*/*') {
+            echo response()
+                ->text("{$errorCode} {$errorTitle} - {$errorMessage}", 404)
+                ->send();
+            die();
+        }
+
         if (strpos($contentType, 'application/json') !== false) {
             self::renderErrorJson($errorCode, $errorTitle, $errorMessage);
         } else {

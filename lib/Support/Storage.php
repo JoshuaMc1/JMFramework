@@ -10,10 +10,27 @@ use Lib\Exception\StorageExceptions\{
     FileDeleteException,
     FileSizeException
 };
+use Illuminate\Support\Str;
 
 class Storage
 {
-    private static $storagePath =  __DIR__ . "/../../public/storage/";
+    private static $storagePath = __DIR__ . '/../../storage/public';
+    private static $allowedTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+        'image/svg+xml',
+        'video/mp4',
+        'video/mpeg',
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    ];
 
     public static function put($file, $subdirectory = '')
     {
@@ -22,11 +39,17 @@ class Storage
                 return false;
             }
 
-            $filename = uniqid() . '_' . $file['name'];
-            $directory = self::$storagePath . '/' . $subdirectory;
+            self::validateFile($file);
+
+            $filename = Str::random(32) . '_' . self::sanitizeFilename($file['name']);
+            $directory = rtrim(self::$storagePath . '/' . $subdirectory, '/');
             self::createDirectory($directory);
 
             $targetPath = $directory . '/' . $filename;
+
+            if (file_exists($targetPath)) {
+                throw new FileUploadException('File already exists');
+            }
 
             if (move_uploaded_file($file['tmp_name'], $targetPath)) {
                 return $subdirectory ? $subdirectory . '/' . $filename : $filename;
@@ -48,7 +71,7 @@ class Storage
                 return true;
             }
 
-            throw new FileDeleteException();
+            return false;
         } catch (FileDeleteException | \Throwable $th) {
             ExceptionHandler::handleException($th);
         }
@@ -61,11 +84,10 @@ class Storage
                 return $path;
             }
 
-            $path = parse_url($path, PHP_URL_PATH);
             $http = isset($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : 'http';
             $host = $_SERVER['HTTP_HOST'];
 
-            return $http . '://' . $host . '/storage/' . $path;
+            return $http . '://' . $host . '/storage/' . ltrim($path, '/');
         } catch (\Throwable $th) {
             ExceptionHandler::handleException($th);
         }
@@ -93,7 +115,7 @@ class Storage
                 return true;
             }
 
-            throw new FileNotFoundException();
+            return false;
         } catch (FileNotFoundException | \Throwable $th) {
             ExceptionHandler::handleException($th);
         }
@@ -144,12 +166,38 @@ class Storage
     private static function createDirectory($directory)
     {
         if (!empty($directory) && !file_exists($directory)) {
-            mkdir($directory, 0777, true);
+            mkdir($directory, 0755, true);
         }
     }
 
     private static function getTargetPath($url)
     {
-        return self::$storagePath . '/' . basename(parse_url($url, PHP_URL_PATH));
+        return self::$storagePath . '/' . ltrim(parse_url($url, PHP_URL_PATH), '/');
+    }
+
+    private static function validateFile($file)
+    {
+        try {
+            if (!in_array($file['type'], self::$allowedTypes)) {
+                throw new MimeTypeException('Invalid file type');
+            }
+
+            $maxSize = FILE_SIZE;
+            $fileSize = filesize($file['tmp_name']);
+
+            if ($fileSize > $maxSize) {
+                throw new FileSizeException('File size exceeds the limit');
+            }
+
+            return true;
+        } catch (MimeTypeException | FileSizeException | \Throwable $th) {
+            ExceptionHandler::handleException($th);
+        }
+    }
+
+    private static function sanitizeFilename($filename)
+    {
+        $sanitized = preg_replace('/[^a-zA-Z0-9_.\-]/', '_', $filename);
+        return $sanitized;
     }
 }

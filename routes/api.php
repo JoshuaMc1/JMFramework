@@ -1,6 +1,6 @@
 <?php
 
-use App\Middleware\ApiAuthMiddleware;
+use App\Http\Middleware\ApiAuthMiddleware;
 use Lib\Http\Auth;
 use Lib\Route;
 

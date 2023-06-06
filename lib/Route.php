@@ -2,7 +2,7 @@
 
 namespace Lib;
 
-use App\Middleware\Middleware;
+use App\Http\Middleware\Middleware;
 use Lib\Exception\ExceptionHandler;
 use Lib\Exception\RouteExceptions\{
     MiddlewareException,
@@ -24,6 +24,13 @@ class Route
     private const PATCH_METHOD = 'PATCH';
     private const DELETE_METHOD = 'DELETE';
     private const OPTIONS_METHOD = 'OPTIONS';
+
+    public function __construct()
+    {
+        error_reporting(E_ERROR);
+        ini_set('display_errors', 0);
+        $this->checkAppKey();
+    }
 
     public static function get($uri, $callback)
     {
@@ -125,7 +132,7 @@ class Route
             } else {
                 echo $response ?? '';
             }
-        } catch (PageNotFoundException | InternalServerErrorException | MethodNotAllowedException $e) {
+        } catch (PageNotFoundException | InternalServerErrorException | MethodNotAllowedException | \Throwable $e) {
             ExceptionHandler::handleException($e);
         }
     }
@@ -197,5 +204,16 @@ class Route
     {
         $pattern = preg_replace('#:[a-zA-Z]+#', '([^/]+)', $route);
         return "#^$pattern$#";
+    }
+
+    private function checkAppKey()
+    {
+        try {
+            if (empty(APP_KEY)) {
+                throw new \Exception('La clave de la aplicación (APP_KEY) no está configurada. Genera una clave (<strong>php console key:generate</strong>) o escribe una en el archivo env.php.', 1800);
+            }
+        } catch (\Throwable $th) {
+            ExceptionHandler::handleException($th);
+        }
     }
 }
