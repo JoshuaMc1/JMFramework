@@ -5,6 +5,7 @@ mix.setPublicPath('public');
 
 mix.options({
     manifest: false,
+    notifications: false,
 });
 
 mix.js('resources/js/app.js', 'public/js')

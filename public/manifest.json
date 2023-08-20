@@ -1,0 +1,23 @@
+{
+    "name": "JMFramework",
+    "short_name": "JMFramework",
+    "description": "JMFramework - PHP Framework.",
+    "authors": [
+        {
+            "name": "Joshua Mclean",
+            "email": "joshua15mclean@gmail.com"
+        }
+    ],
+    "icons": [],
+    "prefer_related_applications": true,
+    "display_override": [
+        "standalone",
+        "minimal-ui",
+        "browser"
+    ],
+    "start_url": "/",
+    "display": "fullscreen",
+    "orientation": "portrait",
+    "background_color": "#2d3142",
+    "theme_color": "#4f5d75"
+}

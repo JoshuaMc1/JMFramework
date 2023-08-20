@@ -126,6 +126,8 @@ class Model
     public function create($data = [])
     {
         try {
+            $this->connection->begin_transaction();
+
             $columns = implode(', ', array_keys($data));
             $values = implode(', ', array_fill(0, count($data), '?'));
 
@@ -138,8 +140,11 @@ class Model
 
             $id = $this->connection->insert_id;
 
+            $this->connection->commit();
+
             return $this->find($id);
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
+            $this->connection->rollback();
             ExceptionHandler::handleException($th);
         }
     }

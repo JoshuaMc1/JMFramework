@@ -4,6 +4,7 @@ namespace Lib\Exception;
 
 use Exception;
 use Lib\Http\ErrorHandler;
+use Lib\Support\Log;
 
 class ExceptionHandler
 {
@@ -18,6 +19,11 @@ class ExceptionHandler
             $errorTitle = 'Error ' . $exception->getCode();
             $errorMessage = $exception->getMessage();
         }
+
+        Log::writeLog('local.exception', $errorMessage, [
+            'code' => $errorCode,
+            'stack_trace' => $exception->getTraceAsString(),
+        ]);
 
         ErrorHandler::renderError($errorCode, $errorTitle, $errorMessage);
     }

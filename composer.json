@@ -1,12 +1,12 @@
 {
-    "name": "joshuamc1/jmfwork",
+    "name": "joshuamc1/jmframework",
     "description": "JMFramework - JMProjects",
     "type": "project",
     "keywords": [
         "php",
         "php8",
         "framework",
-        "JMFWork",
+        "JMFramework",
         "JMProjects"
     ],
     "require": {

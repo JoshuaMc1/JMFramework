@@ -8,7 +8,7 @@ use Lib\Support\CacheManager\CacheInterface;
 class Cache implements CacheInterface
 {
     private static $ttl = 7200;
-    private static $cacheDir = __DIR__ . "/../../storage/.cache/";
+    private static $cacheDir = __DIR__ . "/../../storage/framework/.cache/";
 
     public static function has(string $key): bool
     {

@@ -21,9 +21,25 @@ use Lib\Model\AuthorizationModel\{
 use Lib\Http\Request;
 use Lib\Model\Model;
 
+/**
+ * Class Authorization
+ *
+ * Provides functionality for managing user roles and permissions.
+ */
+
 class Authorization extends Model
 {
-    public static function assignRoleToUser($userId, $roleId)
+    /**
+     * Assigns a role to a user.
+     *
+     * @param int|string $userId The ID of the user.
+     * @param int|string $roleId The ID or name of the role.
+     * @throws UserNotFoundException If the user is not found.
+     * @throws RoleNotFoundException If the role is not found.
+     * @throws UserAlreadyHasPermissionException If the user already has the specified role.
+     * @return bool Returns true if the role is assigned successfully, false otherwise.
+     */
+    public static function assignRoleToUser(int|string $userId, int|string $roleId): bool
     {
         try {
             $user = self::getUser($userId);
@@ -50,7 +66,16 @@ class Authorization extends Model
         }
     }
 
-    private static function getRoleByIdOrName($roleIdOrName)
+    /**
+     * Returns an array containing role information based on either
+     * the role ID or role name provided as an argument.
+     * 
+     * @param int roleIdOrName The parameter `roleIdOrName` can accept either an integer or a string
+     * value. It represents the ID or name of a role.
+     * 
+     * @return ?array an array or null.
+     */
+    private static function getRoleByIdOrName(int|string $roleIdOrName): ?array
     {
 
         if (is_numeric($roleIdOrName)) {
@@ -60,7 +85,18 @@ class Authorization extends Model
         }
     }
 
-    public static function revokeRoleFromUser($userId, $roleId): bool
+    /**
+     * Revokes a role from a user in the authorization system.
+     * 
+     * @param int userId The userId parameter is the identifier of the user from whom you want to
+     * revoke a role. It can be either an integer or a string.
+     * @param int roleId The roleId parameter is the identifier of the role that you want to revoke
+     * from the user. It can be either an integer or a string.
+     * 
+     * @return bool a boolean value. It returns true if the role is successfully revoked from the user,
+     * and false otherwise.
+     */
+    public static function revokeRoleFromUser(int|string $userId, int|string $roleId): bool
     {
         try {
             if (is_numeric($roleId)) {
@@ -95,7 +131,13 @@ class Authorization extends Model
         }
     }
 
-    public static function grantPermissionToRole($roleId, $permissionId)
+    /**
+     * Grants a permission to a role.
+     *
+     * @param int|string $roleId The ID or name of the role.
+     * @param int|string $permissionId The ID or name of the permission.
+     */
+    public static function grantPermissionToRole(int|string $roleId, int|string $permissionId): void
     {
         if (is_numeric($roleId)) {
             $role = self::getRole($roleId);
@@ -115,7 +157,13 @@ class Authorization extends Model
         }
     }
 
-    public static function revokePermissionFromRole($roleId, $permissionId)
+    /**
+     * Revokes a permission from a role.
+     *
+     * @param int|string $roleId The ID or name of the role.
+     * @param int|string $permissionId The ID or name of the permission.
+     */
+    public static function revokePermissionFromRole(int|string $roleId, int|string $permissionId): void
     {
         if (is_numeric($roleId)) {
             $role = self::getRole($roleId);
@@ -142,7 +190,17 @@ class Authorization extends Model
         }
     }
 
-    private static function getRoleByName(string $roleName)
+    /**
+     * Retrieves a role from the database based on its name and returns it
+     * as an array, or null if no role is found.
+     * 
+     * @param string roleName The roleName parameter is a string that represents the name of the role
+     * you want to retrieve from the database.
+     * 
+     * @return ?array an array containing the role that matches the given role name. If no matching
+     * role is found, it returns null.
+     */
+    private static function getRoleByName(string $roleName): ?array
     {
         $result = Role::where('name', $roleName)->get();
 
@@ -153,21 +211,44 @@ class Authorization extends Model
         return null;
     }
 
-    private static function checkUserHasRole($userId, $roleId): bool
+    /**
+     * The function checks if a user has a specific role.
+     * 
+     * @param int|string userId The userId parameter is the identifier of the user for whom we want to check
+     * if they have a specific role. It can be either an integer or a string value.
+     * @param int|string roleId The `` parameter is the ID of the role that you want to check if the
+     * user has.
+     * 
+     * @return bool a boolean value.
+     */
+    private static function checkUserHasRole(int|string $userId, int|string $roleId): bool
     {
         $result = UserRole::where('user_id', $userId)->where('role_id', $roleId)->get();
 
         return !empty($result);
     }
 
-    public static function checkRoleHasPermission($roleId, $permissionId)
+    /**
+     * Checks if a role has a specific permission.
+     *
+     * @param int|string $roleId The ID or name of the role.
+     * @param int|string $permissionId The ID or name of the permission.
+     * @return bool Whether the role has the permission.
+     */
+    public static function checkRoleHasPermission(int|string $roleId, int|string $permissionId): bool
     {
         $result = RolePermission::where('role_id', $roleId)->where('permission_id', $permissionId)->get();
 
         return count($result) > 0;
     }
 
-    public static function getUserRoles($userId)
+    /**
+     * Retrieves the roles assigned to a user.
+     *
+     * @param int|string $userId The ID of the user.
+     * @return array An array of roles assigned to the user.
+     */
+    public static function getUserRoles(int|string $userId): array
     {
         $result = UserRole::where('user_id', $userId)->get();
 
@@ -179,7 +260,13 @@ class Authorization extends Model
         return $roles;
     }
 
-    public static function getRolePermissions($roleId)
+    /**
+     * Retrieves the permissions assigned to a role.
+     *
+     * @param int|string $roleId The ID or name of the role.
+     * @return array An array of permissions assigned to the role.
+     */
+    public static function getRolePermissions(int|string $roleId): array
     {
         $result = RolePermission::where('role_id', $roleId)->get();
 
@@ -192,16 +279,38 @@ class Authorization extends Model
         return $permissions;
     }
 
-    public static function getRole($roleId)
+    /**
+     * Returns a Role object based on the given roleId.
+     * 
+     * @param int|string $roleId The parameter `` is the ID of the role that you want to retrieve from the
+     * database.
+     * 
+     * @return ?Role an instance of the Role class or null if no role is found with the given roleId.
+     */
+    public static function getRole(int|string $roleId): ?Role
     {
         return Role::find($roleId);
     }
 
-    public static function getPermission($permissionId)
+    /**
+     * Retrieves a permission object based on the given permission ID.
+     * 
+     * @param int|string $permissionId The parameter `permissionId` is the ID of the permission that you want to
+     * retrieve.
+     * 
+     * @return ?Permission an instance of the Permission class or null.
+     */
+    public static function getPermission(int|string $permissionId): ?Permission
     {
         return Permission::find($permissionId);
     }
 
+    /**
+     * Creates roles in the system.
+     *
+     * @param array $roles An array of role names to create.
+     * @throws RoleCreationException If role creation fails.
+     */
     public static function createRoles(array $roles)
     {
         $roleModel = new Role();
@@ -231,6 +340,12 @@ class Authorization extends Model
         }
     }
 
+    /**
+     * Creates permissions in the system.
+     *
+     * @param array $permissions An array of permission names to create.
+     * @throws PermissionCreationException If permission creation fails.
+     */
     public static function createPermissions(array $permissions)
     {
         try {
@@ -259,7 +374,15 @@ class Authorization extends Model
         }
     }
 
-    public static function assignPermissionsToRole($roleIdOrName, array $permissionIds)
+    /**
+     * Assigns permissions to a role.
+     *
+     * @param int|string $roleIdOrName The ID or name of the role.
+     * @param array $permissionIds An array of permission IDs to assign.
+     * @throws RoleNotFoundException If the role is not found.
+     * @throws PermissionNotFoundException If a permission is not found.
+     */
+    public static function assignPermissionsToRole(int|string $roleIdOrName, array $permissionIds)
     {
         try {
             $role = self::getRole($roleIdOrName);
@@ -294,6 +417,13 @@ class Authorization extends Model
         }
     }
 
+    /**
+     * Checks if a user has a specific permission.
+     *
+     * @param Request $request The HTTP request object.
+     * @param string $permissionName The name of the permission.
+     * @return bool Whether the user has the permission.
+     */
     public static function can(Request $request, string $permissionName): bool
     {
         $user = $request->user();
@@ -311,12 +441,30 @@ class Authorization extends Model
         return false;
     }
 
-    private static function getPermissionByName(string $permissionName)
+    /**
+     * Retrieves a permission object from the database based on its
+     * name.
+     * 
+     * @param string permissionName A string representing the name of the permission you want to
+     * retrieve.
+     * 
+     * @return ?Permission an instance of the Permission model if a permission with the specified name
+     * is found in the database. If no permission is found, it will return null.
+     */
+    private static function getPermissionByName(string $permissionName): ?Permission
     {
         return Permission::where('name', $permissionName)->first();
     }
 
-    private static function getUser($userId)
+    /**
+     * Retrieves a user object based on the provided user ID.
+     * 
+     * @param int|string $userId The userId parameter is the unique identifier of the user that we want to retrieve
+     * from the database.
+     * 
+     * @return User|null The user object or null if the user is not found
+     */
+    private static function getUser(int|string $userId): ?User
     {
         return User::find($userId);
     }
