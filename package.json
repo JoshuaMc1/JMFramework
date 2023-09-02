@@ -1,6 +1,6 @@
 {
   "name": "jmframework",
-  "description": "",
+  "description": "JMFramework - JMProjects, PHP Framework.",
   "version": "1.0.0",
   "main": "tailwind.config.js",
   "directories": {
@@ -20,8 +20,14 @@
     "url": "git+https://github.com/JoshuaMc1/JMFramework.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "authors": [
+    {
+      "name": "Joshua Mclean",
+      "email": "86990609+JoshuaMc1@users.noreply.github.com",
+      "role": "Developer"
+    }
+  ],
+  "license": "GPL-3.0-or-later",
   "bugs": {
     "url": "https://github.com/JoshuaMc1/JMFramework/issues"
   },

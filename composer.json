@@ -1,6 +1,6 @@
 {
     "name": "joshuamc1/jmframework",
-    "description": "JMFramework - JMProjects",
+    "description": "JMFramework - JMProjects, PHP Framework.",
     "type": "project",
     "keywords": [
         "php",
@@ -9,6 +9,7 @@
         "JMFramework",
         "JMProjects"
     ],
+    "version": "1.0.0",
     "require": {
         "illuminate/console": "10.*",
         "symfony/event-dispatcher": "6.3.x-dev",
