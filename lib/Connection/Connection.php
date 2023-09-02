@@ -49,7 +49,9 @@ class Connection
      */
     public function close(): void
     {
-        $this->connection->close();
+        if ($this->connection !== null) {
+            $this->connection->close();
+        }
     }
 
     /**

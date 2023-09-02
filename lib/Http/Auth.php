@@ -8,9 +8,25 @@ use Lib\Model\{PersonalAccessToken, Session as SessionModel};
 use Lib\Support\{Hash, Token};
 use Lib\Http\{Cookie, Session};
 
+/**
+ * Class Auth
+ * 
+ * this class is responsible for handling all authentication logic 
+ */
 class Auth
 {
-    public static function attemptWeb(string $email, string $password)
+    /**
+     * The function attempts to authenticate a user by checking their email and password, creating a
+     * new session, and setting a session ID cookie and session ID in the session.
+     * 
+     * @param string email The email parameter is a string that represents the email address of the
+     * user attempting to log in.
+     * @param string password The password parameter is a string that represents the user's password.
+     * 
+     * @return bool a boolean value. It returns true if the login attempt is successful and false if it
+     * is not.
+     */
+    public static function attemptWeb(string $email, string $password): bool
     {
         try {
             $user = User::where('email', $email)->first();
@@ -39,7 +55,17 @@ class Auth
         }
     }
 
-    public static function attemptAPI(string $email, string $password)
+    /**
+     * The function attempts to authenticate a user by checking their email and password, and if
+     * successful, generates and stores an API token.
+     * 
+     * @param string email The email parameter is a string that represents the user's email address.
+     * @param string password The password parameter is a string that represents the user's password.
+     * 
+     * @return bool a boolean value. If the user is found and the password is verified, it will return
+     * the access token. Otherwise, it will return false.
+     */
+    public static function attemptAPI(string $email, string $password): bool
     {
         try {
             $user = User::where('email', $email)->first();
@@ -68,7 +94,11 @@ class Auth
         }
     }
 
-    public static function logoutWeb()
+    /**
+     * The function `logoutWeb` logs out a user from a web session by deleting the session record and
+     * removing the session ID cookie.
+     */
+    public static function logoutWeb(): void
     {
         try {
             $session = SessionModel::find(Session::get('session_id'));
@@ -83,7 +113,14 @@ class Auth
         }
     }
 
-    public static function logoutAPI()
+    /**
+     * The function `logoutAPI` checks for an API token in a cookie, deletes the token from the
+     * database, and removes the cookie.
+     * 
+     * @return bool a boolean value. If the condition `` is false (empty or not set), then it
+     * will return `false`. Otherwise, it will return `true` after removing the 'api_token' cookie.
+     */
+    public static function logoutAPI(): bool
     {
         try {
             $apiToken = Cookie::get('api_token');
@@ -104,6 +141,12 @@ class Auth
         }
     }
 
+    /**
+     * This PHP function checks if a web session is valid and active.
+     * 
+     * @return bool a boolean value. It returns true if the web session is valid and active, and false
+     * if the session is invalid or expired.
+     */
     public static function checkWeb(): bool
     {
         try {
@@ -140,6 +183,11 @@ class Auth
         }
     }
 
+    /**
+     * The function checks if the API token stored in a cookie is valid and has not expired.
+     * 
+     * @return bool a boolean value.
+     */
     public static function checkAPI(): bool
     {
         try {
@@ -170,7 +218,13 @@ class Auth
         }
     }
 
-    public static function userWeb()
+    /**
+     * The function `userWeb()` checks if a user is logged in on a web session and returns the
+     * corresponding user object if they are.
+     * 
+     * @return ?User a User object or null.
+     */
+    public static function userWeb(): ?User
     {
         try {
             if (!self::checkWeb()) {
@@ -200,7 +254,13 @@ class Auth
         }
     }
 
-    public static function userAPI()
+    /**
+     * The userAPI function checks if the API token exists and retrieves the corresponding user if it
+     * does.
+     * 
+     * @return ?User a User object or null.
+     */
+    public static function userAPI(): ?User
     {
         try {
             if (!self::checkAPI()) {

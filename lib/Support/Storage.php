@@ -12,10 +12,15 @@ use Lib\Exception\StorageExceptions\{
 };
 use Illuminate\Support\Str;
 
+/**
+ * Class Storage
+ *
+ * Provides file storage and management functions.
+ */
 class Storage
 {
-    private static $storagePath = __DIR__ . '/../../storage/public';
-    private static $allowedTypes = [
+    private static $storagePath = __DIR__ . '/../../storage/public'; // Base directory for storing files.
+    private static $allowedTypes = [ // Array of allowed file MIME types.
         'image/jpeg',
         'image/png',
         'image/gif',
@@ -32,6 +37,13 @@ class Storage
         'application/vnd.openxmlformats-officedocument.presentationml.presentation'
     ];
 
+    /**
+     * Upload a file and store it in the specified subdirectory.
+     *
+     * @param array $file The uploaded file data.
+     * @param string $subdirectory The subdirectory within the storage path where the file should be stored.
+     * @return string|false The filename if the upload is successful, false otherwise.
+     */
     public static function put($file, $subdirectory = '')
     {
         try {
@@ -61,6 +73,12 @@ class Storage
         }
     }
 
+    /**
+     * Delete a file based on its URL.
+     *
+     * @param string $url The URL of the file to delete.
+     * @return bool True if the file is deleted successfully, false otherwise.
+     */
     public static function delete($url)
     {
         try {
@@ -77,6 +95,12 @@ class Storage
         }
     }
 
+    /**
+     * Get the public URL of a stored file.
+     *
+     * @param string $path The path to the file within the storage.
+     * @return string The public URL of the file.
+     */
     public static function url($path)
     {
         try {
@@ -93,6 +117,12 @@ class Storage
         }
     }
 
+    /**
+     * Check if a file exists.
+     *
+     * @param array $file The uploaded file data.
+     * @return bool True if the file exists, false otherwise.
+     */
     public static function has($file)
     {
         try {
@@ -106,6 +136,12 @@ class Storage
         }
     }
 
+    /**
+     * Check if a file exists based on its URL.
+     *
+     * @param string $url The URL of the file to check.
+     * @return bool True if the file exists, false otherwise.
+     */
     public static function exists($url)
     {
         try {
@@ -121,6 +157,12 @@ class Storage
         }
     }
 
+    /**
+     * Get the size of a file.
+     *
+     * @param string $url The URL of the file.
+     * @return int The size of the file in bytes.
+     */
     public static function getSize($url)
     {
         try {
@@ -140,6 +182,12 @@ class Storage
         }
     }
 
+    /**
+     * Get the MIME type of a file.
+     *
+     * @param string $url The URL of the file.
+     * @return string The MIME type of the file.
+     */
     public static function getMimeType($url)
     {
         try {
@@ -163,6 +211,11 @@ class Storage
         }
     }
 
+    /**
+     * Create a directory if it doesn't exist.
+     *
+     * @param string $directory The directory path.
+     */
     private static function createDirectory($directory)
     {
         if (!empty($directory) && !file_exists($directory)) {
@@ -170,11 +223,22 @@ class Storage
         }
     }
 
+    /**
+     * Get the target path for a file based on its URL.
+     *
+     * @param string $url The URL of the file.
+     * @return string The target path on the server.
+     */
     private static function getTargetPath($url)
     {
         return self::$storagePath . '/' . ltrim(parse_url($url, PHP_URL_PATH), '/');
     }
 
+    /**
+     * Validate an uploaded file.
+     *
+     * @param array $file The uploaded file data.
+     */
     private static function validateFile($file)
     {
         try {
@@ -195,6 +259,12 @@ class Storage
         }
     }
 
+    /**
+     * Sanitize a filename to remove invalid characters.
+     *
+     * @param string $filename The original filename.
+     * @return string The sanitized filename.
+     */
     private static function sanitizeFilename($filename)
     {
         $sanitized = preg_replace('/[^a-zA-Z0-9_.\-]/', '_', $filename);

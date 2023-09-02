@@ -2,6 +2,11 @@
 
 namespace Lib\Http;
 
+/**
+ * Class Cookie
+ * 
+ * this class is used to manage cookies
+ */
 class Cookie
 {
     /**

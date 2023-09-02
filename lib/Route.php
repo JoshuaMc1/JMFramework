@@ -13,11 +13,22 @@ use Lib\Exception\RouteExceptions\{
 };
 use Lib\Http\Request;
 
+/**
+ * Route Class
+ *
+ * This class is responsible for defining and managing routes in the application.
+ * It allows you to define routes for various HTTP methods, apply middleware, and dispatch
+ * incoming requests to the appropriate route handlers.
+ *
+ * @package Lib
+ */
 class Route
 {
+    // Static arrays to store routes and middlewares.
     private static $routes = [];
     private static $middlewares = [];
 
+    // Constants for HTTP methods.
     private const GET_METHOD = 'GET';
     private const POST_METHOD = 'POST';
     private const PUT_METHOD = 'PUT';
@@ -25,6 +36,7 @@ class Route
     private const DELETE_METHOD = 'DELETE';
     private const OPTIONS_METHOD = 'OPTIONS';
 
+    // Constructor to set error reporting and check for the application key.
     public function __construct()
     {
         error_reporting(E_ERROR);
@@ -32,42 +44,49 @@ class Route
         $this->checkAppKey();
     }
 
+    // Static method to define a GET route.
     public static function get($uri, $callback)
     {
         self::addRoute(self::GET_METHOD, $uri, $callback);
         return new static();
     }
 
+    // Static method to define a POST route.
     public static function post($uri, $callback)
     {
         self::addRoute(self::POST_METHOD, $uri, $callback);
         return new static();
     }
 
+    // Static method to define a PUT route.
     public static function put($uri, $callback)
     {
         self::addRoute(self::PUT_METHOD, $uri, $callback);
         return new static();
     }
 
+    // Static method to define a PATCH route.
     public static function patch($uri, $callback)
     {
         self::addRoute(self::PATCH_METHOD, $uri, $callback);
         return new static();
     }
 
+    // Static method to define a DELETE route.
     public static function delete($uri, $callback)
     {
         self::addRoute(self::DELETE_METHOD, $uri, $callback);
         return new static();
     }
 
+    // Static method to define a OPTIONS route.
     public static function options($uri, $callback)
     {
         self::addRoute(self::OPTIONS_METHOD, $uri, $callback);
         return new static();
     }
 
+    // Static method to define middleware for routes.
     public static function middleware($middlewares)
     {
         try {
@@ -79,12 +98,14 @@ class Route
         }
     }
 
+    // Method to add middleware to a route.
     public function addMiddlewareToRoute($middlewares)
     {
         $this::$middlewares = $middlewares;
         return $this;
     }
 
+    // Static method to define a group of routes with common middleware.
     public static function group(array $middlewares, callable $callback)
     {
         try {
@@ -97,6 +118,7 @@ class Route
         }
     }
 
+    // Static method to dispatch routes.
     public static function dispatch()
     {
         try {
@@ -137,6 +159,7 @@ class Route
         }
     }
 
+    // Private method to match the requested URI with registered routes.
     private static function match($uri, $routes)
     {
         try {
@@ -158,6 +181,7 @@ class Route
         }
     }
 
+    // Private method to execute the matched route.
     private static function execute($match)
     {
         try {
@@ -192,6 +216,7 @@ class Route
         }
     }
 
+    // Private method to add a route.
     private static function addRoute($method, $uri, $callback)
     {
         self::$routes[$method][trim($uri, '/')] = [
@@ -200,12 +225,14 @@ class Route
         ];
     }
 
+    // Private method to prepare a route pattern.
     private static function prepareRoutePattern($route)
     {
         $pattern = preg_replace('#:[a-zA-Z]+#', '([^/]+)', $route);
         return "#^$pattern$#";
     }
 
+    // Private method to check the application key.
     private function checkAppKey()
     {
         try {
