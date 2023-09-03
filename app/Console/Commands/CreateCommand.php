@@ -6,9 +6,9 @@ use Illuminate\Console\Command;
 
 class CreateCommand extends Command
 {
-    protected $signature = 'command {name}';
+    protected $signature = 'create:command {name}';
 
-    protected $description = 'Crear un nuevo comando';
+    protected $description = 'Create a new command';
 
     public function handle()
     {
@@ -37,10 +37,10 @@ class CreateCommand extends Command
             EOD;
 
         if (file_exists($filename)) {
-            $this->error('El comando ya existe!');
+            $this->error('The command already exists!');
         } else {
             file_put_contents($filename, $stub);
-            $this->info('Comando se a creado correctamente.');
+            $this->info('Command has been successfully created.');
         }
     }
 }

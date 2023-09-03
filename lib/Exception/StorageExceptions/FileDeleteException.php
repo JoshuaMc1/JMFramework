@@ -1,0 +1,25 @@
+<?php
+
+namespace Lib\Exception\StorageExceptions;
+
+use Lib\Exception\CustomException;
+
+/**
+ * Class FileDeleteException
+ * 
+ * this exception is thrown when file deletion fails 
+ */
+class FileDeleteException extends CustomException
+{
+    /**
+     * The function is a constructor that sets error code, title, and message for a file delete error.
+     */
+    public function __construct()
+    {
+        $errorCode = 1002;
+        $errorTitle = 'File Delete Error';
+        $errorMessage = 'Failed to delete file';
+
+        parent::__construct($errorCode, $errorTitle, $errorMessage);
+    }
+}

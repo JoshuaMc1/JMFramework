@@ -1,4 +1,20 @@
 Options -MultiViews
+
 RewriteEngine On
+
 RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]
+
+# Deny access to /resources directory
+<Directory "resources">
+    Order allow,deny
+    Deny from all
+</Directory>
+
+# Rewrite requests to /resources directory to index.php
+RewriteRule ^resources/(.*)$ index.php [L,QSA]
+
+# Handle non-existent files and directories
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]

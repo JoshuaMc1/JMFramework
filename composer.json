@@ -1,17 +1,20 @@
 {
-    "name": "joshuamc1/jmfwork",
-    "description": "JMFramework - JMProjects",
+    "name": "joshuamc1/jmframework",
+    "description": "JMFramework - JMProjects, PHP Framework.",
     "type": "project",
     "keywords": [
         "php",
         "php8",
         "framework",
-        "JMFWork",
+        "JMFramework",
         "JMProjects"
     ],
+    "version": "1.0.0",
     "require": {
         "illuminate/console": "10.*",
-        "symfony/event-dispatcher": "6.3.x-dev"
+        "symfony/event-dispatcher": "6.3.x-dev",
+        "illuminate/view": "10.x-dev",
+        "illuminate/filesystem": "10.x-dev"
     },
     "license": "GPL-3.0-or-later",
     "autoload": {
@@ -30,8 +33,14 @@
             "role": "Developer"
         }
     ],
+    "scripts": {
+        "test": "./vendor/bin/phpunit test/"
+    },
     "support": {
         "email": "joshua15mclean@gmail.com"
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "require-dev": {
+        "phpunit/phpunit": "10.2.x-dev"
+    }
 }

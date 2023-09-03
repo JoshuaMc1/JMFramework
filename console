@@ -14,7 +14,7 @@ $finder->files()->in(__DIR__ . '/app/Console/Commands/')->name('*.php');
 
 $container = new Container();
 $dispatcher = new Dispatcher($container);
-$application = new Application($container, $dispatcher, 'JMFramework', '1.1.0');
+$application = new Application($container, $dispatcher, '1.0.0');
 
 foreach ($finder as $file) {
     $commandClass = 'App\Console\Commands\\' . $file->getBasename('.php');

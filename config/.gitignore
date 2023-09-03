@@ -1,4 +1,4 @@
 *
 !.gitignore
-!database.example.php
 !env.example.php
+!config.php
