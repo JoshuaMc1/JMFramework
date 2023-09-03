@@ -4042,7 +4042,7 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
         "symfony/event-dispatcher": 20,
         "illuminate/view": 20,
