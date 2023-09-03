@@ -1,6 +1,6 @@
 <?php
 
-use Lib\Http\{ErrorHandler, Response};
+use Lib\Http\{Cookie, ErrorHandler, Response};
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Filesystem\Filesystem;
@@ -95,9 +95,8 @@ function dd(mixed $var): void
 function view(mixed $view, array $data = []): string
 {
     try {
-        $basePath = __DIR__ . '/../..';
-        $viewPath = $basePath . '/resources/views/';
-        $cachePath = $basePath . '/storage/framework/.cache/views';
+        $viewPath = __DIR__ . '/../../resources/views/';
+        $cachePath = __DIR__ . '/../../storage/framework/.cache/views';
 
         $filesystem = new Filesystem();
         $viewFinder = new FileViewFinder($filesystem, [$viewPath]);
@@ -208,6 +207,36 @@ function redirect(string $url, int $status = 302, array $headers = []): void
     } catch (\Throwable $th) {
         ErrorHandler::renderError(500, 'Internal Server Error', $th->getMessage());
     }
+}
+
+/**
+ * The function is_valid_csrf_token returns a boolean value.
+ * 
+ * @return bool The function is_valid_csrf_token returns a boolean value.
+ */
+function is_valid_csrf_token(): bool
+{
+    return isset($_POST['_token']) && $_POST['_token'] === Cookie::get('csrf_token');
+}
+
+/**
+ * The csrf_token function generates a CSRF token.
+ *  
+ * @return string a string
+ * */
+function csrf_token(): string
+{
+    return bin2hex(random_bytes(32));
+}
+
+/**
+ * The csrf_token function generates a CSRF token.
+ * 
+ * @return string a string
+ */
+function csrf(): string
+{
+    return '<input type="hidden" name="_token" value="' . Cookie::get('csrf_token') . '">';
 }
 
 /**

@@ -131,6 +131,12 @@ class Route
                 throw new PageNotFoundException();
             }
 
+            // if ($method === 'POST') {
+            //     if (!isset($_POST['_token']) || $_POST['_token'] !== Cookie::get('csrf_token')) {
+            //         throw new CSRFTokenException();
+            //     }
+            // }
+
             $middlewares = $match['middlewares'] ?? [];
 
             if (empty($middlewares)) {

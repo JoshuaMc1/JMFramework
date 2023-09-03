@@ -30,7 +30,7 @@ class ExceptionHandler
             $errorMessage = $exception->getErrorMessage();
         } else {
             $errorCode = $exception->getCode();
-            $errorTitle = 'Error ' . $exception->getCode();
+            $errorTitle = 'Catch Exception - ' . $exception->getCode();
             $errorMessage = $exception->getMessage();
         }
 

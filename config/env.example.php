@@ -1,4 +1,7 @@
 <?php
+/* App */
+define('APP_NAME', 'JMFramework');
+define('APP_URL', 'http://localhost:8000');
 
 /* Database */
 

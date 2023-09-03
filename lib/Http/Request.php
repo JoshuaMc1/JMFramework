@@ -182,6 +182,22 @@ class Request
     }
 
     /**
+     * The function returns the value of the 'Authorization' header or null if it doesn't exist.
+     * 
+     * @return ?string a string value if the 'Authorization' header is set, otherwise it returns null.
+     */
+    public function getToken(): ?string
+    {
+        $token = $this->getHeader('Authorization');
+
+        if (!$token) {
+            return null;
+        }
+
+        return str_replace('Bearer ', '', $token);
+    }
+
+    /**
      * Get all uploaded files.
      *
      * @return array An associative array of uploaded files.
