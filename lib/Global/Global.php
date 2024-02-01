@@ -7,7 +7,6 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Compilers\BladeCompiler;
 use Illuminate\View\Engines\{CompilerEngine, EngineResolver};
 use Illuminate\View\{Factory, FileViewFinder};
-use Lib\Support\Optional;
 
 /**
  * The `dd` function is a PHP debugging function that outputs the value of a variable along with its
@@ -260,16 +259,4 @@ function isJsonRequest(): bool
 function now(): string
 {
     return date('Y-m-d H:i:s');
-}
-
-/**
- * The function `optional` returns an instance of the `Optional` class.
- * 
- * @param mixed $object
- * 
- * @return Optional
- */
-function optional($object)
-{
-    return new Optional($object);
 }
