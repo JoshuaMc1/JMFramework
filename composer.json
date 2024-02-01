@@ -9,7 +9,6 @@
         "JMFramework",
         "JMProjects"
     ],
-    "version": "1.0.0",
     "require": {
         "illuminate/console": "^10.0",
         "symfony/event-dispatcher": "^6.0",
