@@ -1,5 +1,11 @@
 # JMFramework
 
+<p>
+   <a href="https://packagist.org/packages/joshuamc1/jmframework"><img src="https://img.shields.io/packagist/dt/joshuamc1/jmframework" alt="Total Downloads"></a>
+   <a href="https://packagist.org/packages/joshuamc1/jmframework"><img src="https://img.shields.io/packagist/v/joshuamc1/jmframework" alt="Latest Stable Version"></a>
+   <a href="https://packagist.org/packages/joshuamc1/jmframework"><img src="https://img.shields.io/packagist/l/joshuamc1/jmframework" alt="License"></a>
+</p>
+
 JMFramework es un framework PHP diseñado para facilitar el desarrollo de aplicaciones web siguiendo el patrón de diseño Modelo Vista Controlador (MVC). Con un enfoque en la simplicidad y la facilidad de aprendizaje, JMFramework proporciona un solo punto de entrada, librerías incorporadas y una configuración predeterminada de estilos utilizando TailwindCSS.
 
 ## Características Principales
