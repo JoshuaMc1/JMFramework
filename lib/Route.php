@@ -27,6 +27,7 @@ class Route
     // Static arrays to store routes and middlewares.
     private static $routes = [];
     private static $middlewares = [];
+    private static $prefix = '';
 
     // Constants for HTTP methods.
     private const GET_METHOD = 'GET';
@@ -84,6 +85,11 @@ class Route
     {
         self::addRoute(self::OPTIONS_METHOD, $uri, $callback);
         return new static();
+    }
+
+    public static function setPrefix($prefix)
+    {
+        self::$prefix = $prefix;
     }
 
     // Static method to define middleware for routes.
@@ -225,6 +231,7 @@ class Route
     // Private method to add a route.
     private static function addRoute($method, $uri, $callback)
     {
+        $uri = self::$prefix . $uri;
         self::$routes[$method][trim($uri, '/')] = [
             'callback' => $callback,
             'middlewares' => self::$middlewares
