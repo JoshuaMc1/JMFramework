@@ -11,9 +11,25 @@ JMFramework es un framework PHP diseñado para facilitar el desarrollo de aplica
 
 ## Instalación
 
-1. Descarga el framework desde [GitHub](https://github.com/JoshuaMc1/JMFramework).
-2. Extrae el archivo descargado en tu proyecto.
-3. Explora la estructura del proyecto y comienza a desarrollar.
+1. Ejecuta el siguiente comando para crear un nuevo proyecto JMFramework:
+   ```bash
+   composer create-project joshuamc1/jmframework example-name
+
+2. Navega al directorio del nuevo proyecto:
+   ```bash
+   cd example-name
+
+3. Instala las dependencias de Node.js:
+   ```bash
+   npm install
+
+4. Compila los estilos para el proyecto:
+   ```bash
+   npm run dev
+
+5. Inicia el servidor de desarrollo con el siguiente comando:
+   ```bash
+     php console serve
 
 ## Documentación
 
