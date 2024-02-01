@@ -22,6 +22,11 @@
             "Lib\\": "lib/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "bin": [
         "console"
     ],
@@ -38,8 +43,9 @@
     "support": {
         "email": "joshua15mclean@gmail.com"
     },
-    "minimum-stability": "stable",
     "require-dev": {
         "phpunit/phpunit": "^10.0"
-    }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
