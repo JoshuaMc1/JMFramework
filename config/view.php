@@ -39,7 +39,7 @@ return [
     /**
      * Extensions for the view
      * 
-     * Default: ['.php.twig']
+     * Default: ['.html.twig']
      */
-    'extensions' => ['.php.twig'],
+    'extensions' => ['.html.twig'],
 ];
