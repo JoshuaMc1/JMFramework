@@ -8,6 +8,6 @@ Route::setPrefix('/api');
 
 Route::group([ApiAuthMiddleware::class], function () {
     Route::get('/user', function () {
-        return Auth::userAPI();
+        return Auth::user('api');
     });
 });
