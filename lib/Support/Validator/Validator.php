@@ -1,13 +1,17 @@
 <?php
 
-namespace Lib\Support;
+namespace Lib\Support\Validator;
+
+use Lib\Support\Validator\Contracts\ValidatorInterface;
 
 /**
  * Class Validator
  *
  * Provides a simple data validation mechanism based on rules.
+ * 
+ * @CodeError 33
  */
-class Validator
+class Validator implements ValidatorInterface
 {
     /**
      * The data to validate.
@@ -111,11 +115,9 @@ class Validator
         $ruleName = $this->parseRuleName($rule);
         $params = $this->parseRuleParameters($rule);
 
-        if (method_exists($this, $ruleName)) {
-            $this->$ruleName($field, $value, $params);
-        } else {
-            $this->addError($field, $this->getErrorMessage($ruleName, $field, ...$params));
-        }
+        method_exists($this, $ruleName) ?
+            $this->addError($field, $this->getErrorMessage($ruleName, $field, ...$params)) :
+            $this->addError($field, $this->getErrorMessage($ruleName, $field));
     }
 
     /**

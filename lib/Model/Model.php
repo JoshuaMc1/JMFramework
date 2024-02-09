@@ -27,6 +27,7 @@ class Model
      * @var array
      */
     protected $hidden = [];
+
     public function __construct()
     {
         $this->connection = (new Connection())->getConnection();
