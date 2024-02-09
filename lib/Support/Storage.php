@@ -11,40 +11,26 @@ use Lib\Exception\StorageExceptions\{
     FileSizeException
 };
 use Illuminate\Support\Str;
+use Lib\Exception\CustomException;
 
 /**
  * Class Storage
  *
  * Provides file storage and management functions.
+ * 
+ * @CodeError 02
  */
 class Storage
 {
-    private static $storagePath = __DIR__ . '/../../storage/public'; // Base directory for storing files.
-    private static $allowedTypes = [ // Array of allowed file MIME types.
-        'image/jpeg',
-        'image/png',
-        'image/gif',
-        'image/webp',
-        'image/svg+xml',
-        'video/mp4',
-        'video/mpeg',
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.ms-powerpoint',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-    ];
-
     /**
      * Upload a file and store it in the specified subdirectory.
      *
      * @param array $file The uploaded file data.
      * @param string $subdirectory The subdirectory within the storage path where the file should be stored.
+     * 
      * @return string|false The filename if the upload is successful, false otherwise.
      */
-    public static function put($file, $subdirectory = '')
+    public static function put(array $file, $subdirectory = ''): string|false
     {
         try {
             if (!self::has($file)) {
@@ -54,13 +40,13 @@ class Storage
             self::validateFile($file);
 
             $filename = Str::random(32) . '_' . self::sanitizeFilename($file['name']);
-            $directory = rtrim(self::$storagePath . '/' . $subdirectory, '/');
+            $directory = rtrim(config('storage.path') . '/' . $subdirectory, '/');
             self::createDirectory($directory);
 
             $targetPath = $directory . '/' . $filename;
 
             if (file_exists($targetPath)) {
-                throw new FileUploadException('File already exists');
+                throw new FileUploadException(lang('file_already_exists'), lang('file_already_exists_message'));
             }
 
             if (move_uploaded_file($file['tmp_name'], $targetPath)) {
@@ -77,9 +63,10 @@ class Storage
      * Delete a file based on its URL.
      *
      * @param string $url The URL of the file to delete.
+     * 
      * @return bool True if the file is deleted successfully, false otherwise.
      */
-    public static function delete($url)
+    public static function delete(string $url): bool
     {
         try {
             $targetPath = self::getTargetPath($url);
@@ -99,9 +86,10 @@ class Storage
      * Get the public URL of a stored file.
      *
      * @param string $path The path to the file within the storage.
+     * 
      * @return string The public URL of the file.
      */
-    public static function url($path)
+    public static function url(string $path): string
     {
         try {
             if (strpos($path, 'http') === 0) {
@@ -113,7 +101,7 @@ class Storage
 
             return $http . '://' . $host . '/storage/' . ltrim($path, '/');
         } catch (\Throwable $th) {
-            ExceptionHandler::handleException($th);
+            ExceptionHandler::handleException(new CustomException(0206, lang('get_public_url_error'), lang('get_public_url_error_message', ['message' => $th->getMessage()])));
         }
     }
 
@@ -121,13 +109,14 @@ class Storage
      * Check if a file exists.
      *
      * @param array $file The uploaded file data.
-     * @return bool True if the file exists, false otherwise.
+     * 
+     * @return bool|null True if the file exists, false otherwise.
      */
-    public static function has($file)
+    public static function has(array $file): ?bool
     {
         try {
             if (!isset($file['name'], $file['tmp_name'])) {
-                throw new FileUploadException('Invalid file');
+                throw new FileUploadException(lang('invalid_file_message'));
             }
 
             return true;
@@ -140,9 +129,10 @@ class Storage
      * Check if a file exists based on its URL.
      *
      * @param string $url The URL of the file to check.
+     * 
      * @return bool True if the file exists, false otherwise.
      */
-    public static function exists($url)
+    public static function exists(string $url): bool
     {
         try {
             $targetPath = self::getTargetPath($url);
@@ -161,9 +151,10 @@ class Storage
      * Get the size of a file.
      *
      * @param string $url The URL of the file.
-     * @return int The size of the file in bytes.
+     * 
+     * @return int|null The size of the file in bytes.
      */
-    public static function getSize($url)
+    public static function getSize(string $url): ?int
     {
         try {
             $targetPath = self::getTargetPath($url);
@@ -186,9 +177,10 @@ class Storage
      * Get the MIME type of a file.
      *
      * @param string $url The URL of the file.
-     * @return string The MIME type of the file.
+     * 
+     * @return string|null The MIME type of the file.
      */
-    public static function getMimeType($url)
+    public static function getMimeType(string $url): ?string
     {
         try {
             $targetPath = self::getTargetPath($url);
@@ -202,6 +194,7 @@ class Storage
                 }
 
                 finfo_close($finfo);
+
                 return $mimeType;
             }
 
@@ -215,8 +208,10 @@ class Storage
      * Create a directory if it doesn't exist.
      *
      * @param string $directory The directory path.
+     * 
+     * @return void
      */
-    private static function createDirectory($directory)
+    private static function createDirectory($directory): void
     {
         if (!empty($directory) && !file_exists($directory)) {
             mkdir($directory, 0755, true);
@@ -227,30 +222,33 @@ class Storage
      * Get the target path for a file based on its URL.
      *
      * @param string $url The URL of the file.
+     * 
      * @return string The target path on the server.
      */
-    private static function getTargetPath($url)
+    private static function getTargetPath($url): string
     {
-        return self::$storagePath . '/' . ltrim(parse_url($url, PHP_URL_PATH), '/');
+        return config('storage.path') . '/' . ltrim(parse_url($url, PHP_URL_PATH), '/');
     }
 
     /**
      * Validate an uploaded file.
      *
      * @param array $file The uploaded file data.
+     * 
+     * @return bool True if the file is valid, false otherwise.
      */
-    private static function validateFile($file)
+    private static function validateFile($file): bool
     {
         try {
-            if (!in_array($file['type'], self::$allowedTypes)) {
-                throw new MimeTypeException('Invalid file type');
+            if (!in_array($file['type'], config('storage.allowed_types'))) {
+                throw new MimeTypeException(lang('invalid_file_type_message'));
             }
 
-            $maxSize = FILE_SIZE;
+            $maxSize = config('file.file_size');
             $fileSize = filesize($file['tmp_name']);
 
             if ($fileSize > $maxSize) {
-                throw new FileSizeException('File size exceeds the limit');
+                throw new FileSizeException(lang('invalid_file_size_message'));
             }
 
             return true;

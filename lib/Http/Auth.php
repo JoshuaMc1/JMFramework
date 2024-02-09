@@ -26,7 +26,7 @@ class Auth
      * @return bool a boolean value. It returns true if the login attempt is successful and false if it
      * is not.
      */
-    public static function attemptWeb(string $email, string $password): bool
+    private static function attemptWeb(string $email, string $password): bool
     {
         try {
             $user = User::where('email', $email)->first();
@@ -65,7 +65,7 @@ class Auth
      * @return bool a boolean value. If the user is found and the password is verified, it will return
      * the access token. Otherwise, it will return false.
      */
-    public static function attemptAPI(string $email, string $password): bool
+    private static function attemptAPI(string $email, string $password): bool
     {
         try {
             $user = User::where('email', $email)->first();
@@ -94,11 +94,22 @@ class Auth
         }
     }
 
+    public static function attempt(string $email, string $password, string $guard = 'web'): bool
+    {
+        try {
+            return ($guard == 'web') ?
+                self::attemptWeb($email, $password) :
+                self::attemptAPI($email, $password);
+        } catch (\Throwable $th) {
+            ExceptionHandler::handleException($th);
+        }
+    }
+
     /**
      * The function `logoutWeb` logs out a user from a web session by deleting the session record and
      * removing the session ID cookie.
      */
-    public static function logoutWeb(): void
+    private static function logoutWeb(): void
     {
         try {
             $session = SessionModel::find(Session::get('session_id'));
@@ -120,7 +131,7 @@ class Auth
      * @return bool a boolean value. If the condition `` is false (empty or not set), then it
      * will return `false`. Otherwise, it will return `true` after removing the 'api_token' cookie.
      */
-    public static function logoutAPI(): bool
+    private static function logoutAPI(): bool
     {
         try {
             $apiToken = Cookie::get('api_token');
@@ -141,13 +152,24 @@ class Auth
         }
     }
 
+    public static function logout(string $guard = 'web'): bool
+    {
+        try {
+            return ($guard == 'web') ?
+                self::logoutWeb() :
+                self::logoutAPI();
+        } catch (\Throwable $th) {
+            ExceptionHandler::handleException($th);
+        }
+    }
+
     /**
      * This PHP function checks if a web session is valid and active.
      * 
      * @return bool a boolean value. It returns true if the web session is valid and active, and false
      * if the session is invalid or expired.
      */
-    public static function checkWeb(): bool
+    private static function checkWeb(): bool
     {
         try {
             $sessionId = Cookie::get('session_id');
@@ -188,7 +210,7 @@ class Auth
      * 
      * @return bool a boolean value.
      */
-    public static function checkAPI(): bool
+    private static function checkAPI(): bool
     {
         try {
             $apiToken = Cookie::get('api_token');
@@ -218,13 +240,24 @@ class Auth
         }
     }
 
+    public static function check(string $guard = 'web'): bool
+    {
+        try {
+            return ($guard == 'web') ?
+                self::checkWeb() :
+                self::checkAPI();
+        } catch (\Throwable $th) {
+            ExceptionHandler::handleException($th);
+        }
+    }
+
     /**
      * The function `userWeb()` checks if a user is logged in on a web session and returns the
      * corresponding user object if they are.
      * 
      * @return ?User a User object or null.
      */
-    public static function userWeb(): ?User
+    private static function userWeb(): ?User
     {
         try {
             if (!self::checkWeb()) {
@@ -260,7 +293,7 @@ class Auth
      * 
      * @return ?User a User object or null.
      */
-    public static function userAPI(): ?User
+    private static function userAPI(): ?User
     {
         try {
             if (!self::checkAPI()) {
@@ -285,6 +318,17 @@ class Auth
             }
 
             return $user;
+        } catch (\Throwable $th) {
+            ExceptionHandler::handleException($th);
+        }
+    }
+
+    public static function user(string $guard = 'web'): ?User
+    {
+        try {
+            return ($guard == 'web') ?
+                self::userWeb() :
+                self::userAPI();
         } catch (\Throwable $th) {
             ExceptionHandler::handleException($th);
         }

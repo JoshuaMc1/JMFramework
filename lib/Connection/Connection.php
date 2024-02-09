@@ -3,24 +3,22 @@
 namespace Lib\Connection;
 
 use Lib\Exception\ConnectionExceptions\DatabaseConnectionException;
-use Lib\Exception\ExceptionHandler;
-use mysqli;
+use PDO;
 
-/**
- * Class Connection
- *
- * Represents a database connection using MySQLi.
- */
 class Connection
 {
-    /** @var mysqli|null The MySQLi database connection. */
     protected $connection;
+    protected $config;
 
     /**
      * Connection constructor. Initiates the database connection.
+     *
+     * @return void
      */
     public function __construct()
     {
+        $driver = config('database.default');
+        $this->config = config('database.connections.' . $driver);
         $this->connect();
     }
 
@@ -28,19 +26,26 @@ class Connection
      * Establishes the database connection.
      *
      * @throws DatabaseConnectionException If a database connection error occurs.
+     *
+     * @return void
      */
-    protected function connect(): void
+    protected function connect()
     {
         try {
-            $this->connection = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
+            $dsn = "{$this->config['driver']}:host={$this->config['host']};dbname={$this->config['database']};charset={$this->config['charset']};port={$this->config['port']}";
 
-            if ($this->connection->connect_error) {
-                throw new DatabaseConnectionException($this->connection->connect_errno, 'Database Connection Error', $this->connection->connect_error);
-            }
-        } catch (DatabaseConnectionException $exception) {
-            ExceptionHandler::handleException($exception);
-        } catch (\Throwable $th) {
-            throw new DatabaseConnectionException($th->getCode(), 'Internal Server Error', $th->getMessage());
+            $this->connection = new PDO(
+                $dsn,
+                $this->config['username'],
+                $this->config['password'],
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                ]
+            );
+        } catch (\PDOException $exception) {
+            throw new DatabaseConnectionException($exception->getCode(), $exception->getMessage());
         }
     }
 
@@ -49,17 +54,15 @@ class Connection
      */
     public function close(): void
     {
-        if ($this->connection !== null) {
-            $this->connection->close();
-        }
+        $this->connection = null;
     }
 
     /**
      * Gets the established database connection.
      *
-     * @return mysqli|null The MySQLi database connection.
+     * @return PDO|null The PDO database connection.
      */
-    public function getConnection(): ?mysqli
+    public function getConnection(): ?PDO
     {
         return $this->connection;
     }

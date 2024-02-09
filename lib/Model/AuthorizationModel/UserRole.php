@@ -4,6 +4,7 @@ namespace Lib\Model\AuthorizationModel;
 
 use Lib\Exception\ExceptionHandler;
 use Lib\Model\Model;
+use PDO;
 
 /**
  * Class UserRole
@@ -42,10 +43,11 @@ class UserRole extends Model
         try {
             $query = "DELETE FROM {$this->table} WHERE user_id = ? AND role_id = ?";
             $stmt = $this->connection->prepare($query);
-            $stmt->bind_param("ii", $userId, $roleId);
+            $stmt->bindParam(1, $userId, PDO::PARAM_INT);
+            $stmt->bindParam(2, $roleId, PDO::PARAM_INT);
             $stmt->execute();
 
-            if ($stmt->affected_rows > 0) {
+            if ($stmt->rowCount() > 0) {
                 return true;
             }
 
@@ -69,13 +71,16 @@ class UserRole extends Model
     {
         try {
             $columns = implode(', ', array_keys($data));
-            $values = implode(', ', array_fill(0, count($data), '?'));
+            $values = implode(', ', array_fill(0, count($data), ':'));
 
             $query = "INSERT INTO {$this->table} ({$columns}) VALUES ({$values})";
 
             $stmt = $this->connection->prepare($query);
 
-            $stmt->bind_param(str_repeat('s', count($data)), ...array_values($data));
+            foreach ($data as $key => $value) {
+                $stmt->bindValue(":$key", $value);
+            }
+
             $stmt->execute();
 
             return true;

@@ -20,9 +20,9 @@ class PermissionCreationException extends CustomException
      */
     public function __construct($permissionId)
     {
-        $errorCode = 404;
-        $errorTitle = 'Error creating the permission';
-        $errorMessage = "The permission with ID {$permissionId} does not exist.";
+        $errorCode = 2201;
+        $errorTitle = lang('error_creating_permission');
+        $errorMessage = lang('error_creating_permission_message', ['permissionId' => $permissionId]);
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }
 }

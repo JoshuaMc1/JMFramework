@@ -16,9 +16,9 @@ class FileDeleteException extends CustomException
      */
     public function __construct()
     {
-        $errorCode = 1002;
-        $errorTitle = 'File Delete Error';
-        $errorMessage = 'Failed to delete file';
+        $errorCode = 0201;
+        $errorTitle = lang('file_delete_error');
+        $errorMessage = lang('file_delete_error_message');
 
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }

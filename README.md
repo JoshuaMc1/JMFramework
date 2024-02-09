@@ -8,28 +8,47 @@ JMFramework es un framework PHP diseñado para facilitar el desarrollo de aplica
 - **Punto de Entrada Único:** Simplifica la estructura y navegación del proyecto con un solo punto de entrada.
 - **Librerías Incorporadas:** Incluye librerías propias para tareas comunes, acelerando el desarrollo.
 - **Configuración Predeterminada de Estilos:** Integración con TailwindCSS para un diseño moderno y flexible.
+- **Motor de Plantillas Twig:** Integración con Twig para la creación de plantillas HTML dinámicas.
+- **Seguridad:** Soporte para la gestión de permisos, autenticación y autorización.
+- **Sistema de migraciones:** El proyecto cuenta con su propio sistema de migraciones llamado SchemaForge el cual te permite realizar migraciones de base de datos de forma sencilla.
+- **Storage:** Soporte para la gestión de archivos y carpetas.
+- **Validación de datos:** Soporte para la validación de datos de entrada.
+- **Validación de datos de entrada:** Soporte para la validación de datos de entrada.
 
 ## Instalación
 
 1. Ejecuta el siguiente comando para crear un nuevo proyecto JMFramework:
+
    ```bash
    composer create-project joshuamc1/jmframework example-name
 
+   ```
+
 2. Navega al directorio del nuevo proyecto:
+
    ```bash
    cd example-name
 
+   ```
+
 3. Instala las dependencias de Node.js:
+
    ```bash
    npm install
 
+   ```
+
 4. Compila los estilos para el proyecto:
+
    ```bash
    npm run dev
+
+   ```
 
 5. Inicia el servidor de desarrollo con el siguiente comando:
    ```bash
      php console serve
+   ```
 
 ## Documentación
 

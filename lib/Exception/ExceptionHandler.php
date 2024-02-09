@@ -5,6 +5,7 @@ namespace Lib\Exception;
 use Exception;
 use Lib\Http\ErrorHandler;
 use Lib\Support\Log;
+use Throwable;
 
 /**
  * Class ExceptionHandler
@@ -19,28 +20,22 @@ class ExceptionHandler
      * This method is responsible for handling exceptions and throwable errors
      * within the application. It logs the error details and renders an error page.
      *
-     * @param Exception|\Throwable $exception The exception or error to be handled.
+     * @param CustomException|Exception|Throwable $exception The exception or error to be handled.
      */
-    public static function handleException(Exception | \Throwable $exception)
+    public static function handleException(CustomException | Exception | Throwable $exception)
     {
-        // Determine the error code, title, and message based on the exception type.
-        if ($exception instanceof CustomException) {
-            $errorCode = $exception->getErrorCode();
-            $errorTitle = $exception->getErrorTitle();
-            $errorMessage = $exception->getErrorMessage();
-        } else {
-            $errorCode = $exception->getCode();
-            $errorTitle = 'Catch Exception - ' . $exception->getCode();
-            $errorMessage = $exception->getMessage();
-        }
+        $errorCode = $exception instanceof CustomException ?
+            ($exception->getErrorCode() ?? 500) : ($exception->getCode() ?: 500);
 
-        // Log the error details, including code and stack trace.
-        Log::writeLog('local.exception', $errorMessage, [
-            'code' => $errorCode,
-            'stack_trace' => $exception->getTraceAsString(),
-        ]);
+        $errorTitle = $exception instanceof CustomException ?
+            $exception->getErrorTitle() :
+            lang('an_error_occurred');
 
-        // Render an error page using the ErrorHandler class.
+        $errorMessage = $exception instanceof CustomException ?
+            $exception->getErrorMessage() : ($exception->getMessage() ?: lang('an_error_occurred'));
+
+        Log::debug($exception, $errorMessage);
+
         ErrorHandler::renderError($errorCode, $errorTitle, $errorMessage);
     }
 }

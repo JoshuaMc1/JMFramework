@@ -3,7 +3,6 @@
 namespace Lib\Http;
 
 use Lib\Templates\Templates;
-use Lib\Support\Log;
 
 /**
  * Class ErrorHandler
@@ -68,13 +67,6 @@ class ErrorHandler
                 ->send();
             die();
         }
-
-        $exception = new \ErrorException($errorMessage, $errorCode);
-
-        Log::writeLog('exception error', $errorMessage, [
-            'code' => $errorCode,
-            'stack_trace' => $exception->getTraceAsString(),
-        ]);
 
         if (strpos($contentType, 'application/json') !== false) {
             self::renderErrorJson($errorCode, $errorTitle, $errorMessage);

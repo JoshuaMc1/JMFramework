@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+require_once __DIR__ . '/../../../lib/Global/Global.php';
+
 use Illuminate\Console\Command;
 
 class CreateControllerCommand extends Command
@@ -36,7 +38,8 @@ class CreateControllerCommand extends Command
     protected function getControllerFilePath($name)
     {
         $controllerPath = $this->getControllerPath($name);
-        $filename = dirname(__DIR__, 3) . "/app/Controllers/{$controllerPath}.php";
+        $filename = controller_path() . "/{$controllerPath}.php";
+
         return $filename;
     }
 
@@ -63,8 +66,10 @@ class CreateControllerCommand extends Command
     private function getNamespace($name)
     {
         $parts = explode('/', $name);
-        $directory = count($parts) > 1 ? '\\' . $parts[0] : '';
-        return $directory;
+
+        array_pop($parts);
+
+        return implode('\\', $parts);
     }
 
     private function getClassName($name)
@@ -78,16 +83,18 @@ class CreateControllerCommand extends Command
         $namespace = $this->getNamespace($name);
         $className = $this->getClassName($name);
 
+        $namespaceString = $namespace ? "namespace App\Http\Controllers\\$namespace;" : 'namespace App\Http\Controllers;';
+
         return <<<EOD
-<?php
-
-namespace App\Http\Controllers\{$namespace};
-
-class $className
-{
-    //
-}
-EOD;
+    <?php
+    
+    $namespaceString
+    
+    class $className
+    {
+        //
+    }
+    EOD;
     }
 
     protected function getResourceControllerStub($name)
@@ -95,10 +102,12 @@ EOD;
         $namespace = $this->getNamespace($name);
         $className = $this->getClassName($name);
 
+        $namespaceString = $namespace ? "namespace App\Http\Controllers\\$namespace;" : 'namespace App\Http\Controllers;';
+
         return <<<EOD
 <?php
 
-namespace App\Http\Controllers\{$namespace};
+$namespaceString
 
 use Lib\Http\Request;
 
@@ -119,22 +128,22 @@ class $className
         //
     }
 
-    public function show(\$id)
+    public function show(Request \$request, string \$id)
     {
         //
     }
 
-    public function edit(\$id)
+    public function edit(Request \$request, string \$id)
     {
         //
     }
 
-    public function update(Request \$request, \$id)
+    public function update(Request \$request, string \$id)
     {
         //
     }
 
-    public function destroy(\$id)
+    public function destroy(Request \$request, string \$id)
     {
         //
     }

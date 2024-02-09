@@ -13,9 +13,9 @@ class RoleCreationException extends CustomException
 {
     public function __construct($roleId)
     {
-        $errorCode = 404;
-        $errorTitle = 'Error creating the role';
-        $errorMessage = "The role with ID {$roleId} does not exist.";
+        $errorCode = 2203;
+        $errorTitle = lang('error_creating_role');
+        $errorMessage = lang('error_creating_role_message', ['roleId' => $roleId]);
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }
 }

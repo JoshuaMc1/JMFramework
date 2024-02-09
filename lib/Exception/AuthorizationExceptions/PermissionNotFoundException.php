@@ -19,9 +19,9 @@ class PermissionNotFoundException extends CustomException
      */
     public function __construct($permissionId)
     {
-        $errorCode = 404;
-        $errorTitle = 'Permission not found';
-        $errorMessage = "The permission `{$permissionId}` does not exist.";
+        $errorCode = 2202;
+        $errorTitle = lang('permission_not_found');
+        $errorMessage = lang('permission_not_found_message', ['permissionId' => $permissionId]);
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }
 }

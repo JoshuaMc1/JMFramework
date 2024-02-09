@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+require_once __DIR__ . '/../../../lib/Global/Global.php';
+
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
@@ -14,18 +16,27 @@ class GenerateKeyCommand extends Command
     public function handle()
     {
         try {
-            $envPath = dirname(__DIR__, 3) . '/config/env.php';
-
+            $envPath = $this->getEnvPath();
             $key = $this->generateKey();
 
             if ($this->updateEnvFile($envPath, $key)) {
-                $this->info('Application key generated successfully and updated in env.php');
+                $this->info('Application key generated successfully and updated in .env file.');
             } else {
-                $this->error('Failed to update the application key in env.php');
+                $this->error('Failed to update the application key in .env file.');
             }
         } catch (\Throwable $th) {
             $this->error($th->getMessage());
         }
+    }
+
+    /**
+     * Get the path to the .env file.
+     *
+     * @return string
+     */
+    private function getEnvPath(): string
+    {
+        return base_path() . '/.env';
     }
 
     private function generateKey()
@@ -43,7 +54,7 @@ class GenerateKeyCommand extends Command
             return false;
         }
 
-        $updatedContent = preg_replace('/(define\(\'APP_KEY\',\s+\').*?(\'\);)/', '$1' . $key . '$2', $envContent);
+        $updatedContent = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY=' . $key, $envContent);
 
         if ($updatedContent === null) {
             return false;

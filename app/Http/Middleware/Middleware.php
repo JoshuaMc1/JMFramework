@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use Lib\Http\Middleware\MiddlewareInterface;
+use Lib\Http\Middleware\Contracts\MiddlewareInterface;
 use Lib\Http\Request;
 
 /**

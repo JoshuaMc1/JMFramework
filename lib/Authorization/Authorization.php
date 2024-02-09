@@ -12,6 +12,7 @@ use Lib\Exception\AuthorizationExceptions\{
     RoleNotFoundException,
     UserAlreadyHasPermissionException
 };
+use Lib\Http\Auth;
 use Lib\Model\AuthorizationModel\{
     Permission,
     Role,
@@ -20,6 +21,7 @@ use Lib\Model\AuthorizationModel\{
 };
 use Lib\Http\Request;
 use Lib\Model\Model;
+use PDO;
 
 /**
  * Class Authorization
@@ -317,12 +319,12 @@ class Authorization extends Model
 
         try {
             $connection = $roleModel->getConnection();
-            $connection->begin_transaction();
+            $connection->beginTransaction();
 
-            $stmt = $connection->prepare("INSERT INTO {$roleModel->getTableName()} (name) VALUES (?)");
+            $stmt = $connection->prepare("INSERT INTO {$roleModel->getTableName()} (name) VALUES (:roleName)");
 
             foreach ($roles as $role) {
-                $stmt->bind_param('s', $role);
+                $stmt->bindParam(':roleName', $role, PDO::PARAM_STR);
                 $stmt->execute();
             }
 
@@ -351,12 +353,12 @@ class Authorization extends Model
         try {
             $permissionModel = new Permission();
             $connection = $permissionModel->getConnection();
-            $connection->begin_transaction();
+            $connection->beginTransaction();
 
-            $stmt = $connection->prepare("INSERT INTO {$permissionModel->getTableName()} (name) VALUES (?)");
+            $stmt = $connection->prepare("INSERT INTO {$permissionModel->getTableName()} (name) VALUES (:permissionName)");
 
             foreach ($permissions as $permission) {
-                $stmt->bind_param('s', $permission);
+                $stmt->bindParam(':permissionName', $permission, PDO::PARAM_STR);
                 $stmt->execute();
             }
 
@@ -394,20 +396,21 @@ class Authorization extends Model
             $roleId = $role['id'];
             $rolePermissionModel = new RolePermission();
             $connection = $rolePermissionModel->getConnection();
-            $connection->begin_transaction();
+            $connection->beginTransaction();
 
-            $stmt = $connection->prepare("INSERT INTO {$rolePermissionModel->getTableName()} (role_id, permission_id) VALUES (?, ?)");
+            $stmt = $connection->prepare("INSERT INTO {$rolePermissionModel->getTableName()} (role_id, permission_id) VALUES (:roleId, :permissionId)");
 
             foreach ($permissionIds as $permissionId) {
                 $permission = self::getPermission($permissionId);
 
                 if ($permission === null) {
-                    $connection->rollback();
+                    $connection->rollBack();
                     throw new PermissionNotFoundException($permissionId);
                 }
 
                 $permissionId = $permission['id'];
-                $stmt->bind_param('ii', $roleId, $permissionId);
+                $stmt->bindParam(':roleId', $roleId, PDO::PARAM_INT);
+                $stmt->bindParam(':permissionId', $permissionId, PDO::PARAM_INT);
                 $stmt->execute();
             }
 
@@ -424,9 +427,14 @@ class Authorization extends Model
      * @param string $permissionName The name of the permission.
      * @return bool Whether the user has the permission.
      */
-    public static function can(Request $request, string $permissionName): bool
+    public static function can(string $permissionName, string $guard = 'web'): bool
     {
-        $user = $request->user();
+        if (!Auth::check($guard)) {
+            return false;
+        }
+
+        $user = Auth::user($guard);
+
         $userRoles = self::getUserRoles($user['id']);
 
         $permission = self::getPermissionByName($permissionName);
@@ -448,10 +456,9 @@ class Authorization extends Model
      * @param string permissionName A string representing the name of the permission you want to
      * retrieve.
      * 
-     * @return ?Permission an instance of the Permission model if a permission with the specified name
-     * is found in the database. If no permission is found, it will return null.
+     * @return mixed The permission object or null if the permission is not found.
      */
-    private static function getPermissionByName(string $permissionName): ?Permission
+    private static function getPermissionByName(string $permissionName): mixed
     {
         return Permission::where('name', $permissionName)->first();
     }

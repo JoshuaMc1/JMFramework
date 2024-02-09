@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+require_once __DIR__ . '/../../../lib/Global/Global.php';
+
 use Illuminate\Console\Command;
 
 class CreateStorageLinkCommand extends Command
@@ -13,9 +15,8 @@ class CreateStorageLinkCommand extends Command
     public function handle()
     {
         try {
-            $rootPath = dirname(__DIR__, 3);
-            $publicPath = $rootPath . '/public';
-            $storagePath = $rootPath . '/storage/public';
+            $publicPath = public_path();
+            $storagePath = base_path() . '/storage/public';
 
             if (file_exists($publicPath . '/storage')) {
                 $this->error('The "public/storage" directory already exists.');

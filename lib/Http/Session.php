@@ -23,16 +23,16 @@ class Session
     {
         try {
             if (session_status() !== PHP_SESSION_ACTIVE) {
-                $sessionPath = __DIR__ . '/../../storage/framework/sessions/';
+                $sessionPath = config('session.path');
 
                 if (!is_dir($sessionPath)) {
                     mkdir($sessionPath, 0777, true);
                 }
 
                 session_save_path($sessionPath);
-                ini_set('session.gc_probability', 1);
-                ini_set('session.gc_divisor', 100);
-                ini_set('session.gc_maxlifetime', SESSION_LIFETIME);
+                ini_set('session.gc_probability', config('session.probability'));
+                ini_set('session.gc_divisor', config('session.divisor'));
+                ini_set('session.gc_maxlifetime', config('session.lifetime'));
                 session_start();
             }
         } catch (\Throwable $th) {

@@ -16,9 +16,9 @@ class FileNotFoundException extends CustomException
      */
     public function __construct()
     {
-        $errorCode = 1003;
-        $errorTitle = 'File Not Found';
-        $errorMessage = 'The requested file was not found';
+        $errorCode = 0202;
+        $errorTitle = lang('file_not_found');
+        $errorMessage = lang('file_not_found_message');
 
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }

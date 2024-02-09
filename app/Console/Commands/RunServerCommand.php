@@ -2,19 +2,21 @@
 
 namespace App\Console\Commands;
 
+require_once __DIR__ . '/../../../lib/Global/Global.php';
+
 use Illuminate\Console\Command;
 
 class RunServerCommand extends Command
 {
-    protected $signature = 'server';
+    protected $signature = 'server {--host=localhost} {--port=8000}';
 
     protected $description = 'Create local server.';
 
     public function handle()
     {
-        $host = 'localhost';
-        $port = 8000;
-        $doc_root = dirname(__DIR__, 3) . '/public';
+        $host = $this->option('host');
+        $port = $this->option('port');
+        $doc_root = public_path();
         $server_command = "php -S $host:$port -t $doc_root";
 
         $server_process = popen($server_command, "r");

@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Lib\Exception\ExceptionHandler;
 use Lib\Exception\RouteExceptions\UnauthorizedAccessException;
 use Lib\Support\{Token, Hash};
-use Lib\Http\Middleware\MiddlewareInterface;
+use Lib\Http\Middleware\Contracts\MiddlewareInterface;
 use Lib\Http\Request;
 use Lib\Model\PersonalAccessToken;
 

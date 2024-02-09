@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+require_once __DIR__ . '/../../../lib/Global/Global.php';
+
 use Illuminate\Console\Command;
 
 class CreateMiddlewareCommand extends Command
@@ -13,7 +15,7 @@ class CreateMiddlewareCommand extends Command
     public function handle()
     {
         $name = $this->argument('name');
-        $filename = dirname(__DIR__, 3) . "/app/Middleware/{$name}.php";
+        $filename = middleware_path() . "/{$name}.php";
 
         if (file_exists($filename)) {
             $this->error('The middleware already exists!');

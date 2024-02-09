@@ -52,6 +52,13 @@ class Request
     private $files;
 
     /**
+     * An associative array of registered named routes.
+     * 
+     * @var array
+     * */
+    private static $namedRoutes = [];
+
+    /**
      * Constructor: Initializes the request object by populating properties from global variables.
      */
     public function __construct()
@@ -69,21 +76,10 @@ class Request
      *
      * @return User|null The authenticated user or null if not authenticated.
      */
-    public function user()
+    public function user(string $guard = 'web')
     {
         try {
-            $webUser = Auth::userWeb();
-            $apiUser = Auth::userAPI();
-
-            if ($webUser !== null) {
-                return $webUser;
-            }
-
-            if ($apiUser !== null) {
-                return $apiUser;
-            }
-
-            return null;
+            return Auth::user($guard);
         } catch (\Throwable $th) {
             ExceptionHandler::handleException($th);
         }
@@ -343,7 +339,7 @@ class Request
      *
      * @return \DateTime|null The request data value as a \DateTime instance or null if not valid.
      */
-    public function date($key, $format = 'Y-m-d', $timezone = null)
+    public function date($key, $format = 'Y-m-d')
     {
         $value = $this->data[$key] ?? null;
 
@@ -357,11 +353,238 @@ class Request
             return null;
         }
 
-        if ($timezone !== null) {
-            $dateTime->setTimezone(new \DateTimeZone($timezone));
+        if (config('app.timezone') !== null) {
+            $dateTime->setTimezone(new \DateTimeZone(config('app.timezone')));
         }
 
         return $dateTime;
+    }
+
+    /**
+     * Set the named routes.
+     * 
+     * @param array $namedRoutes The named routes.
+     * 
+     * @return void
+     * */
+    public static function setNamedRoutes($namedRoutes): void
+    {
+        self::$namedRoutes = $namedRoutes;
+    }
+
+    /**
+     * Get the named routes.
+     * 
+     * @return array The named routes.
+     * */
+    public function getNamedRoutes()
+    {
+        return self::$namedRoutes;
+    }
+
+    /**
+     * Get the named route.
+     * 
+     * @param string $name The name of the route.
+     * 
+     * @return string The named route.
+     * */
+    public function getNamedRoute($name)
+    {
+        return self::$namedRoutes[$name];
+    }
+
+    /**
+     * Check if the named route matches the current route
+     * 
+     * @param string $name
+     * 
+     * @return bool true if routes match
+     * */
+    public function routeIs(string $name)
+    {
+        $currentRoute = $this->getUri();
+
+        return (strpos($name, '.*') !== false) ?
+            $this->checkPatternedRoute($name, $currentRoute) :
+            $this->checkExactRoute($name, $currentRoute);
+    }
+
+    /**
+     * Check if the named route matches the current route
+     * 
+     * @param string $patternedName
+     * @param string $currentRoute
+     * 
+     * @return bool true if routes match 
+     * */
+    private function checkPatternedRoute(string $patternedName, string $currentRoute): bool
+    {
+        $pattern = rtrim($patternedName, '.*');
+
+        foreach (self::$namedRoutes as $routeName => $routeUri) {
+            if (strpos($routeName, $pattern) === 0) {
+                $normalizedRoute = $this->normalizeRoute($routeUri);
+                $normalizedCurrentRoute = $this->normalizeRoute($currentRoute);
+
+                if ($this->matchRoutes($normalizedCurrentRoute, $normalizedRoute)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if the named route matches the current route
+     * 
+     * @param string $exactName
+     * @param string $currentRoute
+     * 
+     * @return bool true if routes match
+     * */
+    private function checkExactRoute(string $exactName, string $currentRoute): bool
+    {
+        if (array_key_exists($exactName, self::$namedRoutes)) {
+            $normalizedRoute = $this->normalizeRoute(self::$namedRoutes[$exactName]);
+            $normalizedCurrentRoute = $this->normalizeRoute($currentRoute);
+
+            return $this->matchRoutes($normalizedCurrentRoute, $normalizedRoute);
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if two routes match
+     * 
+     * @param string $currentRoute
+     * @param string $namedRoute
+     * 
+     * @return bool true if routes match
+     * */
+    private function matchRoutes(string $currentRoute, string $namedRoute): bool
+    {
+        $currentParts = explode('/', $currentRoute);
+        $namedParts = explode('/', $namedRoute);
+
+        if (count($currentParts) !== count($namedParts)) {
+            return false;
+        }
+
+        foreach ($currentParts as $key => $part) {
+            if ($namedParts[$key] !== '{param}' && $currentParts[$key] !== $namedParts[$key]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Normalize route
+     * 
+     * @param string $routeUri
+     * 
+     * @return string normalized route uri 
+     * */
+    private function normalizeRoute(string $routeUri): string
+    {
+        return preg_replace('/\/:\w+/', '/{param}', $routeUri);
+    }
+
+    /**
+     * Get the named route.
+     * 
+     * @param string $name The name of the route.
+     * @param array  $params The route parameters.
+     * 
+     * @return string The named route.
+     * */
+    public function route($name = null, $params = [])
+    {
+        $url = self::$namedRoutes[$name] ?? null;
+
+        if ($url && is_array($params) && !empty($params)) {
+            foreach ($params as $key => $value) {
+                $url = str_replace(":{$key}", rawurlencode($value), $url);
+            }
+        }
+
+        return '/' . ltrim($url, '/');
+    }
+
+    /**
+     * Check if the request is an AJAX request.
+     * 
+     * @return bool
+     * */
+    public function isAjax()
+    {
+        return isset($this->headers['X-Requested-With']) && $this->headers['X-Requested-With'] === 'XMLHttpRequest';
+    }
+
+    /**
+     * Check if the request is a secure request.
+     * 
+     * @return bool
+     * */
+    public function isSecure()
+    {
+        return isset($this->headers['HTTPS']) && $this->headers['HTTPS'] === 'on';
+    }
+
+    /**
+     * Get the client IP.
+     * 
+     * @return string
+     * */
+    public function getClientIp()
+    {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+
+    /**
+     * Get the user agent.
+     * 
+     * @return string
+     * */
+    public function getUserAgent()
+    {
+        return $this->headers['User-Agent'] ?? '';
+    }
+
+    /**
+     * Get the referer URL.
+     * 
+     * @return string
+     * */
+    public function getReferer()
+    {
+        return $this->headers['Referer'] ?? '';
+    }
+
+    /**
+     * Get the request method override.
+     * 
+     * @return string
+     * */
+    public function getMethodOverride()
+    {
+        return $this->data['_method'] ?? $this->getHeader('X-HTTP-Method-Override');
+    }
+
+    /**
+     * Check if a file has been uploaded.
+     * 
+     * @param string $key
+     * 
+     * @return bool
+     * */
+    public function hasFile($key)
+    {
+        return isset($this->files[$key]) && $this->files[$key]['error'] === UPLOAD_ERR_OK;
     }
 
     /**

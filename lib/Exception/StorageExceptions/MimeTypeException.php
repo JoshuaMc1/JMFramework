@@ -16,9 +16,9 @@ class MimeTypeException extends CustomException
      */
     public function __construct()
     {
-        $errorCode = 1005;
-        $errorTitle = 'Invalid Mime Type';
-        $errorMessage = 'The file has an invalid mime type';
+        $errorCode = 0205;
+        $errorTitle = lang('invalid_mime_type');
+        $errorMessage = lang('invalid_mime_type_message');
 
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }

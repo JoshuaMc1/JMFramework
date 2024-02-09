@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+require_once __DIR__ . '/../../../lib/Global/Global.php';
+
 use Illuminate\Console\Command;
 
 class CreateModelCommand extends Command
@@ -38,7 +40,7 @@ class CreateModelCommand extends Command
     protected function getModelFilePath($name)
     {
         $modelPath = $this->getModelPath($name);
-        $filename = dirname(__DIR__, 3) . "/app/Models/{$modelPath}.php";
+        $filename = model_path() . "/{$modelPath}.php";
         return $filename;
     }
 

@@ -2,7 +2,7 @@
 
 use App\Http\Middleware\ApiAuthMiddleware;
 use Lib\Http\Auth;
-use Lib\Route;
+use Lib\Router\Route;
 
 Route::setPrefix('/api');
 

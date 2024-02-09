@@ -4,14 +4,29 @@ namespace Lib\Model;
 
 use Lib\Connection\Connection;
 use Lib\Exception\ExceptionHandler;
+use PDO;
 
 class Model
 {
+    /**
+     * @var \PDO
+     */
     protected $connection;
-    protected $query;
-    protected $table;
-    protected $hidden = [];
 
+    /**
+     * @var \PDOStatement|\array|null
+     */
+    protected $query;
+
+    /**
+     * @var string
+     */
+    protected $table;
+
+    /**
+     * @var array
+     */
+    protected $hidden = [];
     public function __construct()
     {
         $this->connection = (new Connection())->getConnection();
@@ -21,16 +36,11 @@ class Model
     {
         try {
             $statement = $this->connection->prepare($sql);
-
-            if ($values) {
-                $statement->bind_param(str_repeat('s', count($values)), ...$values);
-            }
-
-            $statement->execute();
-            $this->query = $statement->get_result();
+            $statement->execute($values);
+            $this->query = $statement->fetchAll(PDO::FETCH_OBJ);
 
             return $this;
-        } catch (\Exception $th) {
+        } catch (\PDOException $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -38,10 +48,10 @@ class Model
     public function first()
     {
         try {
-            $result = $this->query->fetch_assoc();
+            $result = isset($this->query[0]) ? $this->query[0] : null;
 
             return $result;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -49,14 +59,14 @@ class Model
     public function get()
     {
         try {
-            $results = $this->query->fetch_all(MYSQLI_ASSOC);
+            $results = $this->query;
 
             foreach ($results as &$result) {
                 $result = $this->hideFields($result);
             }
 
             return $results;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -67,9 +77,10 @@ class Model
             $instance = new static;
             $stmt = $instance->connection->prepare("SELECT * FROM {$instance->table}");
             $stmt->execute();
-            $result = $stmt->get_result();
-            return $result->fetch_all(MYSQLI_ASSOC);
-        } catch (\Exception  $th) {
+            $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+            return $result;
+        } catch (\PDOException $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -79,14 +90,12 @@ class Model
         try {
             $instance = new static;
             $stmt = $instance->connection->prepare("SELECT * FROM {$instance->table} WHERE id = ?");
-            $stmt->bind_param('i', $id);
+            $stmt->bindParam(1, $id, PDO::PARAM_INT);
             $stmt->execute();
-            $result = $stmt->get_result()->fetch_assoc();
+            $result = $stmt->fetch(PDO::FETCH_OBJ);
 
-            $result = $instance->hideFields($result);
-
-            return $result;
-        } catch (\Exception  $th) {
+            return $result ? $instance->hideFields($result) : null;
+        } catch (\PDOException $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -110,23 +119,22 @@ class Model
             $query = "SELECT * FROM {$instance->table} WHERE `{$column}` {$operator} ?";
 
             $stmt = $instance->connection->prepare($query);
-            $stmt->bind_param('s', $value);
+            $stmt->bindParam(1, $value);
             $stmt->execute();
-            $result = $stmt->get_result();
+            $result = $stmt->fetchAll(PDO::FETCH_OBJ);
 
             $instance->query = $result;
 
             return $instance;
-        } catch (\Exception $th) {
+        } catch (\PDOException $th) {
             ExceptionHandler::handleException($th);
         }
     }
 
-
     public function create($data = [])
     {
         try {
-            $this->connection->begin_transaction();
+            $this->connection->beginTransaction();
 
             $columns = implode(', ', array_keys($data));
             $values = implode(', ', array_fill(0, count($data), '?'));
@@ -135,16 +143,15 @@ class Model
 
             $stmt = $this->connection->prepare($query);
 
-            $stmt->bind_param(str_repeat('s', count($data)), ...array_values($data));
-            $stmt->execute();
+            $stmt->execute(array_values($data));
 
-            $id = $this->connection->insert_id;
+            $id = $this->connection->lastInsertId();
 
             $this->connection->commit();
 
             return $this->find($id);
-        } catch (\Exception $th) {
-            $this->connection->rollback();
+        } catch (\PDOException $th) {
+            $this->connection->rollBack();
             ExceptionHandler::handleException($th);
         }
     }
@@ -153,12 +160,10 @@ class Model
     {
         try {
             $fields = [];
-            $types = '';
             $params = [];
 
             foreach ($data as $key => $value) {
                 $fields[] = "{$key} = ?";
-                $types .= $this->getType($value);
                 $params[] = $value;
             }
 
@@ -167,11 +172,10 @@ class Model
             $fields = implode(', ', $fields);
 
             $stmt = $this->connection->prepare("UPDATE {$this->table} SET {$fields} WHERE id = ?");
-            $stmt->bind_param($types . 'i', ...$params);
-            $stmt->execute();
+            $stmt->execute($params);
 
             return $this->find($id);
-        } catch (\Exception  $th) {
+        } catch (\PDOException $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -181,38 +185,21 @@ class Model
         return $this->connection;
     }
 
-    private function getType($value)
-    {
-        try {
-            $typeMap = [
-                'integer' => 'i',
-                'double' => 'd',
-                'string' => 's',
-            ];
-
-            $type = gettype($value);
-            return isset($typeMap[$type]) ? $typeMap[$type] : 's';
-        } catch (\Exception  $th) {
-            ExceptionHandler::handleException($th);
-        }
-    }
-
     public function from($table)
     {
         try {
-            $this->query = "SELECT * FROM " . $this->connection->real_escape_string($table);
+            $this->query = "SELECT * FROM " . $this->connection->quote($table);
             return $this;
         } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
 
-
-    public function delete(int $id)
+    public function delete(mixed $id)
     {
         try {
             $this->query("DELETE FROM {$this->table} WHERE id = ?", [$id]);
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -220,8 +207,8 @@ class Model
     public function deleteForTheStatus(int $id)
     {
         try {
-            $this->query("UPDATE {$this->table} SET status = '0' WHERE id = {$id}");
-        } catch (\Exception  $th) {
+            $this->query("UPDATE {$this->table} SET status = '0' WHERE id = ?", [$id]);
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -231,13 +218,16 @@ class Model
         try {
             if (isset($data['id'])) {
                 $id = $data['id'];
+
                 unset($data['id']);
+
                 $this->update($id, $data);
+
                 return $this->find($id);
-            } else {
-                return $this->create($data);
             }
-        } catch (\Exception  $th) {
+
+            return $this->create($data);
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -282,7 +272,7 @@ class Model
         try {
             $this->query .= " ORDER BY {$column} {$direction}";
             return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -292,7 +282,7 @@ class Model
         try {
             $this->query .= " LIMIT {$limit}";
             return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -302,7 +292,7 @@ class Model
         try {
             $this->query .= " OFFSET {$offset}";
             return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -312,7 +302,7 @@ class Model
         try {
             $this->query .= " JOIN {$table} ON {$foreignColumn} {$operator} {$localColumn}";
             return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -322,7 +312,7 @@ class Model
         try {
             $this->query .= " GROUP BY {$column}";
             return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -334,9 +324,56 @@ class Model
                 $value = $operator;
                 $operator = '=';
             }
-            $this->query .= " HAVING {$column} {$operator} {$value}";
+            $this->query .= " HAVING {$column} {$operator} ?";
+            $this->execute([$value]);
             return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
+            ExceptionHandler::handleException($th);
+        }
+    }
+
+    public function between($column, $start, $end)
+    {
+        try {
+            $this->query .= " WHERE {$column} BETWEEN ? AND ?";
+            $this->execute([$start, $end]);
+            return $this;
+        } catch (\Exception $th) {
+            ExceptionHandler::handleException($th);
+        }
+    }
+
+    public function whereIn($column, array $values)
+    {
+        try {
+            $inValues = implode(', ', array_fill(0, count($values), '?'));
+
+            $this->query("SELECT * FROM {$this->table} WHERE {$column} IN ({$inValues})");
+            $this->execute($values);
+            return $this;
+        } catch (\Exception $th) {
+            ExceptionHandler::handleException($th);
+        }
+    }
+
+    public function percentage($column, $percentage)
+    {
+        try {
+            $this->query("SELECT {$column} * ? / 100 FROM {$this->table}");
+            $this->execute([$percentage]);
+            return $this;
+        } catch (\Exception $th) {
+            ExceptionHandler::handleException($th);
+        }
+    }
+
+    private function execute($values)
+    {
+        try {
+            $stmt = $this->connection->prepare($this->query);
+            $stmt->execute($values);
+            $this->query = '';
+        } catch (\PDOException $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -346,17 +383,7 @@ class Model
         try {
             $this->query = str_replace('SELECT', 'SELECT DISTINCT', $this->query);
             return $this;
-        } catch (\Exception  $th) {
-            ExceptionHandler::handleException($th);
-        }
-    }
-
-    public function between($column, $start, $end)
-    {
-        try {
-            $this->query .= " WHERE {$column} BETWEEN {$start} AND {$end}";
-            return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -366,7 +393,7 @@ class Model
         try {
             $this->query("SELECT * FROM {$this->table} WHERE {$column} IS NULL");
             return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -376,21 +403,7 @@ class Model
         try {
             $this->query("SELECT * FROM {$this->table} WHERE {$column} IS NOT NULL");
             return $this;
-        } catch (\Exception  $th) {
-            ExceptionHandler::handleException($th);
-        }
-    }
-
-    public function whereIn($column, array $values)
-    {
-        try {
-            $inValues = implode(', ', array_map(function ($value) {
-                return "'{$value}'";
-            }, $values));
-
-            $this->query("SELECT * FROM {$this->table} WHERE {$column} IN ({$inValues})");
-            return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -400,7 +413,7 @@ class Model
         try {
             $this->query("SELECT {$expression} FROM {$this->table}");
             return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -410,7 +423,7 @@ class Model
         try {
             $this->query("SELECT SUM({$column}) FROM {$this->table}");
             return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -420,17 +433,7 @@ class Model
         try {
             $this->query("SELECT {$column1} - {$column2} FROM {$this->table}");
             return $this;
-        } catch (\Exception  $th) {
-            ExceptionHandler::handleException($th);
-        }
-    }
-
-    public function percentage($column, $percentage)
-    {
-        try {
-            $this->query("SELECT {$column} * {$percentage} / 100 FROM {$this->table}");
-            return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -440,7 +443,7 @@ class Model
         try {
             $this->query("SELECT {$column1} * {$column2} FROM {$this->table}");
             return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -450,7 +453,7 @@ class Model
         try {
             $this->query("SELECT {$column1} / {$column2} FROM {$this->table}");
             return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -460,7 +463,7 @@ class Model
         try {
             $this->query("SELECT ABS({$column}) FROM {$this->table}");
             return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -470,7 +473,7 @@ class Model
         try {
             $this->query("SELECT ROUND({$column}, {$precision}) FROM {$this->table}");
             return $this;
-        } catch (\Exception  $th) {
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -478,8 +481,8 @@ class Model
     public function count()
     {
         try {
-            return $this->query->num_rows;
-        } catch (\Exception  $th) {
+            return count($this->query);
+        } catch (\Exception $th) {
             ExceptionHandler::handleException($th);
         }
     }
@@ -493,10 +496,5 @@ class Model
         }
 
         return $result;
-    }
-
-    public function __destruct()
-    {
-        $this->connection->close();
     }
 }

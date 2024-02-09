@@ -9,23 +9,60 @@ namespace Lib\Support;
  */
 class Validator
 {
+    /**
+     * The data to validate.
+     * 
+     * @var array $data
+     */
     protected $data;
-    protected $rules;
-    protected $errors = [];
-    protected $customErrorMessages = [];
-    protected static $ruleErrorMessages = [
-        'required' => 'The :attribute field is required.',
-        'min' => 'The :attribute must be at least :min characters.',
-        'max' => 'The :attribute must be at most :max characters.',
-        'between' => 'The :attribute must be between :min and :max characters.',
-        'email' => 'The :attribute must be a valid email address.',
-        'image' => 'The :attribute must be an image.'
-    ];
 
+    /**
+     * The validation rules.
+     * 
+     * @var array $rules
+     */
+    protected $rules;
+
+    /**
+     * The array of validation errors.
+     * 
+     * @var array $errors
+     */
+    protected $errors = [];
+
+    /**
+     * The array of custom error messages.
+     * 
+     * @var array $customErrorMessages
+     */
+    protected $customErrorMessages = [];
+
+    /**
+     * The array of error messages for each rule.
+     * 
+     * @var array $ruleErrorMessages
+     */
+    protected static $ruleErrorMessages;
+
+    /**
+     * The array of custom attributes for error messages.
+     * 
+     * @var array $customAttributes
+     */
+    protected static $customAttributes;
+
+    /**
+     * Initialize the Validator class.
+     * 
+     * @param array $data The data to validate.
+     * @param array $rules The validation rules to apply.
+     */
     public function __construct(array $data = [], array $rules = [])
     {
         $this->data = $data;
         $this->rules = $rules;
+        self::$ruleErrorMessages = require_once(lang_path() . '/' . config('app.locale') . '/validation.php');
+        self::$customAttributes = self::$ruleErrorMessages['attributes'] ?? [];
     }
 
     /**
@@ -193,7 +230,9 @@ class Validator
     {
         $customMessage = $this->customErrorMessages[$rule] ?? null;
         $message = $customMessage ?: self::$ruleErrorMessages[$rule];
-        $message = str_replace(':attribute', $field, $message);
+        $attributeName = $this->getAttributeName($field);
+
+        $message = str_replace(':attribute', $attributeName, $message);
 
         if (isset($params[0])) {
             $message = str_replace(':min', $params[0], $message);
@@ -228,7 +267,7 @@ class Validator
 
         foreach ($this->errors as $field => $errorMessages) {
             foreach ($errorMessages as $errorMessage) {
-                $formattedErrors[] = "{$field}: {$errorMessage}";
+                $formattedErrors[] = "{$this->getAttributeName($field)}: {$errorMessage}";
             }
         }
 
@@ -279,5 +318,26 @@ class Validator
         }
 
         return [];
+    }
+
+    /**
+     * Set custom attributes for error messages.
+     *
+     * @param array $attributes The array of custom attributes.
+     */
+    public static function setCustomAttributes(array $attributes)
+    {
+        self::$customAttributes = $attributes;
+    }
+
+    /**
+     * Get the name of the attribute, considering custom names.
+     *
+     * @param string $field The field being validated.
+     * @return string The attribute name.
+     */
+    protected function getAttributeName(string $field): string
+    {
+        return self::$customAttributes[$field] ?? $field;
     }
 }

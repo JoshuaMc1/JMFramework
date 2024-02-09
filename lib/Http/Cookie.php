@@ -22,7 +22,7 @@ class Cookie
      *
      * @return void
      */
-    public static function set(string $name, string $value, int $expire = 0, string $path = '', string $domain = '', bool $secure = false, bool $httpOnly = false)
+    public static function set($name, $value, $expire = 0, string $path = '', string $domain = '', bool $secure = false, bool $httpOnly = true)
     {
         setcookie($name, $value, $expire, $path, $domain, $secure, $httpOnly);
     }

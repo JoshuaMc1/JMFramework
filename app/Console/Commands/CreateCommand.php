@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+require_once __DIR__ . '/../../../lib/Global/Global.php';
+
 use Illuminate\Console\Command;
 
 class CreateCommand extends Command
@@ -14,7 +16,7 @@ class CreateCommand extends Command
     {
         $name = $this->argument('name');
 
-        $filename = dirname(__DIR__, 3) . "/app/Console/Commands/{$name}.php";
+        $filename = app_path() . "/Console/Commands/{$name}.php";
 
         $stub = <<<EOD
             <?php

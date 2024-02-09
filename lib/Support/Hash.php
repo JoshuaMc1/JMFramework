@@ -9,10 +9,6 @@ namespace Lib\Support;
  */
 class Hash
 {
-    const DEFAULT_ITERATIONS = 1;
-    const DEFAULT_ALGORITHM = 'sha256';
-    const DEFAULT_HASH_KEY = APP_KEY;
-
     /**
      * Generate a hashed value for the given string.
      *
@@ -26,10 +22,10 @@ class Hash
      */
     public static function make(string $value, array $options = []): string
     {
-        $algorithm = $options['algorithm'] ?? self::DEFAULT_ALGORITHM;
+        $algorithm = $options['algorithm'] ?? config('hash.algorithm', 'sha256');
         $salt = $options['salt'] ?? '';
-        $iterations = $options['iterations'] ?? self::DEFAULT_ITERATIONS;
-        $hashKey = $options['hash_key'] ?? self::DEFAULT_HASH_KEY;
+        $iterations = $options['iterations'] ?? config('hash.iterations', 1);
+        $hashKey = $options['hash_key'] ?? config('app.key');
 
         $hash = hash_hmac($algorithm, $value . $salt, $hashKey);
 
@@ -41,11 +37,12 @@ class Hash
     }
 
     /**
-     * Verify if a given string matches a hashed value.
-     *
+     * Verify that the given value matches the given hash.
+     * 
      * @param string $value The input value to be verified.
-     * @param string $hash The hashed value to compare against.
-     * @param array $options An array of options for customizing the hashing process (same as make() options).
+     * @param string $hash The hash to compare against.
+     * @param array $options An array of options for customizing the verification process.
+     * 
      * @return bool True if the input value matches the hashed value, false otherwise.
      */
     public static function verify(string $value, string $hash, array $options = []): bool
@@ -54,28 +51,64 @@ class Hash
     }
 
     /**
-     * Encrypt a string using AES-256-CBC encryption.
-     *
-     * @param string $value The input value to be encrypted.
-     * @return string The encrypted value in base64 encoding.
-     */
-    public static function encrypt(string $value): string
+     * Encrypt the given value.
+     * 
+     * @param mixed $data The value to encrypt.
+     * 
+     * @return string The encrypted value.
+     * */
+    public static function encrypt(mixed $data): string
     {
-        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('AES-256-CBC'));
-        $encrypted = openssl_encrypt($value, 'AES-256-CBC', self::DEFAULT_HASH_KEY, 0, $iv);
-        return base64_encode($encrypted . ':' . $iv);
+        if (!is_string($data)) {
+            $data = serialize($data);
+        }
+
+        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length(config('hash.encrypt')));
+
+        $encrypted = openssl_encrypt($data, config('hash.encrypt'), config('app.key'), 0, $iv);
+
+        return base64_encode($iv . $encrypted);
     }
 
     /**
-     * Decrypt an encrypted string that was previously encrypted using AES-256-CBC encryption.
-     *
-     * @param string $value The encrypted value in base64 encoding.
-     * @return string The decrypted original value.
-     */
-    public static function decrypt(string $value): string
+     * Decrypt the given value.
+     * 
+     * @param string $data The value to decrypt.
+     * 
+     * @return string The decrypted value.
+     * */
+    public static function decrypt(string $data): mixed
     {
-        $value = base64_decode($value);
-        [$encrypted, $iv] = explode(':', $value, 2);
-        return openssl_decrypt($encrypted, 'AES-256-CBC', self::DEFAULT_HASH_KEY, 0, $iv);
+        $data = base64_decode($data);
+
+        $ivSize = openssl_cipher_iv_length(config('hash.encrypt'));
+        $iv = substr($data, 0, $ivSize);
+        $data = substr($data, $ivSize);
+
+        return unserialize(openssl_decrypt($data, config('hash.encrypt'), config('app.key'), 0, $iv)) ?? null;
+    }
+
+    /**
+     * Generate a hashed value for the given string.
+     * 
+     * @param string $value The input value to be hashed.
+     * 
+     * @return string The hashed value.
+     * */
+    public static function bcrypt(mixed $value): string
+    {
+        return password_hash($value, PASSWORD_BCRYPT);
+    }
+
+    /**
+     * Verify if a given string matches a hashed value.
+     * 
+     * @param string $value The input value to be verified.
+     * 
+     * @return bool True if the input value matches the hashed value, false otherwise.
+     * */
+    public static function verify_bcrypt(mixed $value, string $hash): bool
+    {
+        return password_verify($value, $hash);
     }
 }
