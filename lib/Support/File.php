@@ -132,4 +132,9 @@ class File
 
         return rmdir($path);
     }
+
+    public static function scandir(string $path): array
+    {
+        return array_diff(scandir($path), ['.', '..']);
+    }
 }
