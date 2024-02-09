@@ -27,12 +27,11 @@ class View
 
         $this->twig = new Environment($loader, [
             'cache' => config('view.compiled'),
-            'debug' => config('view.debug'),
             'auto_reload' => config('view.auto_reload'),
-            'autoescape' => config('view.autoescape'),
-            'optimizations' => config('view.optimizations'),
-            'strict_variables' => config('view.strict_variables'),
-            'extensions' => config('view.extensions'),
+            'autoescape' => config('view.autoescape', false),
+            'optimizations' => config('view.optimizations', -1),
+            'extensions' => config('view.extensions', ['.twig']),
+            'charset' => config('view.charset', 'utf-8'),
         ]);
 
         $this->twig->addExtension(new GlobalFunctionsExtension());
