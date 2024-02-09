@@ -18,28 +18,41 @@ class CreateStorageLinkCommand extends Command
             $publicPath = public_path();
             $storagePath = base_path() . '/storage/public';
 
+            $this->comment('Creating storage link...');
+
             if (file_exists($publicPath . '/storage')) {
-                $this->error('The "public/storage" directory already exists.');
+                $this->showErrorMessage('- The storage directory already exists.');
+
                 return;
             }
 
-            if ($this->createSymbolicLink($storagePath, $publicPath . '/storage')) {
-                $this->info('The storage directory has been linked successfully.');
-            } else {
-                $this->error('Failed to create the storage link.');
-            }
+            $this->createSymbolicLink($storagePath, $publicPath . '/storage') ?
+                $this->showSuccessMessage('- The storage directory has been linked successfully.') :
+                $this->showErrorMessage('- Failed to create the storage link.');
         } catch (\Throwable $th) {
-            $this->error($th->getMessage());
+            $this->showErrorMessage($th->getMessage());
         }
+    }
+
+    private function showErrorMessage($message)
+    {
+        $this->line('');
+        $this->error($message);
+        $this->line('');
+    }
+
+    private function showSuccessMessage($message)
+    {
+        $this->line('');
+        $this->info($message);
+        $this->line('');
     }
 
     protected function createSymbolicLink($target, $link)
     {
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            return $this->createWindowsSymbolicLink($target, $link);
-        } else {
-            return $this->createUnixSymbolicLink($target, $link);
-        }
+        return (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') ?
+            $this->createWindowsSymbolicLink($target, $link) :
+            $this->createUnixSymbolicLink($target, $link);
     }
 
     protected function createWindowsSymbolicLink($target, $link)

@@ -15,10 +15,33 @@ class CacheExpiredClearCommand extends Command
 
     public function handle()
     {
-        $result = Cache::clear();
+        try {
+            $this->clearCache();
+        } catch (\Throwable $th) {
+            $this->showErrorMessage($th->getMessage());
+        }
+    }
 
-        (!$result) ?
-            $this->error('An error occurred while clearing the cache!') :
-            $this->info('The cache has been successfully cleared.');
+    private function clearCache()
+    {
+        $this->comment('Clearing cache...');
+
+        !Cache::clear() ?
+            $this->showErrorMessage('- An error occurred while clearing the cache!') :
+            $this->showSuccessMessage('- The cache has been successfully cleared.');
+    }
+
+    private function showErrorMessage($message)
+    {
+        $this->line('');
+        $this->error($message);
+        $this->line('');
+    }
+
+    private function showSuccessMessage($message)
+    {
+        $this->line('');
+        $this->info($message);
+        $this->line('');
     }
 }
