@@ -15,29 +15,49 @@ class SchemaCreateCommand extends Command
 
     public function handle()
     {
-        $name = $this->argument('schema');
-        $fileName = $this->generateFileName($name);
+        try {
+            $name = $this->argument('schema');
+            $fileName = $this->generateFileName($name);
 
-        $schemaFiles = scandir(database_path());
-        $existingSchema = false;
+            $this->comment("Creating schema...");
 
-        foreach ($schemaFiles as $file) {
-            if ($this->getSchemaBaseName($file) === $this->getSchemaBaseName($fileName)) {
-                $existingSchema = true;
-                break;
+            $schemaFiles = scandir(database_path());
+            $existingSchema = false;
+
+            foreach ($schemaFiles as $file) {
+                if ($this->getSchemaBaseName($file) === $this->getSchemaBaseName($fileName)) {
+                    $existingSchema = true;
+                    break;
+                }
             }
-        }
 
-        ($existingSchema) ?
-            $this->error("The schema already exists!") :
-            $this->createFile($name, $fileName);
+            ($existingSchema) ?
+                $this->showErrorMessage("- Schema {$name} already exists") :
+                $this->createFile($name, $fileName);
+        } catch (\Throwable $th) {
+            $this->showErrorMessage($th->getMessage());
+        }
+    }
+
+    private function showErrorMessage($message)
+    {
+        $this->line('');
+        $this->error($message);
+        $this->line('');
+    }
+
+    private function showSuccessMessage($message)
+    {
+        $this->line('');
+        $this->info($message);
+        $this->line('');
     }
 
     public function createFile(string $name, string $fileName)
     {
         file_put_contents(database_path() . '/' . $fileName, $this->generateStub($name));
 
-        $this->info("Schema {$name} created successfully at database/{$fileName}");
+        $this->showSuccessMessage("- Schema {$name} created successfully at database/{$fileName}");
     }
 
     private function getSchemaBaseName($fileName)

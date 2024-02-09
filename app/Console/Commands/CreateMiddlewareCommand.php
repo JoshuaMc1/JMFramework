@@ -14,34 +14,66 @@ class CreateMiddlewareCommand extends Command
 
     public function handle()
     {
-        $name = $this->argument('name');
-        $filename = middleware_path() . "/{$name}.php";
+        try {
+            $name = $this->argument('name');
+            $filename = middleware_path() . "/{$name}.php";
 
-        if (file_exists($filename)) {
-            $this->error('The middleware already exists!');
-        } else {
-            file_put_contents($filename, $this->getMiddlewareStub($name));
-            $this->info('Middleware successfully created.');
+            $this->comment('Creating new middleware...');
+
+            $this->middlewareExists($filename) ?
+                $this->showErrorMessage('- The middleware already exists!') :
+                $this->createNewCommand($filename, $name);
+        } catch (\Throwable $th) {
+            $this->showErrorMessage($th->getMessage());
         }
+    }
+
+    private function createNewCommand($filename, $name)
+    {
+        file_put_contents($filename, $this->getMiddlewareStub($name));
+
+        $this->showSuccessMessage('- Command has been successfully created.');
+    }
+
+    private function showErrorMessage($message)
+    {
+        $this->line('');
+        $this->error($message);
+        $this->line('');
+    }
+
+    private function showSuccessMessage($message)
+    {
+        $this->line('');
+        $this->info($message);
+        $this->line('');
+    }
+
+    private function middlewareExists($filename)
+    {
+        return file_exists($filename);
     }
 
     public function getMiddlewareStub($name)
     {
-        return addcslashes(<<<EOD
-        <?php
+        return addcslashes(
+            <<<EOD
+            <?php
 
-        namespace App\Http\Middleware;
+            namespace App\Http\Middleware;
 
-        use Lib\Http\Middleware\MiddlewareInterface;
-        use Lib\Http\Request;
+            use Lib\Http\Middleware\Contracts\MiddlewareInterface;
+            use Lib\Http\Request;
 
-        class $name implements MiddlewareInterface
-        {
-            public function handle(callable \$next, Request \$request)
+            class $name implements MiddlewareInterface
             {
-                return \$next();
+                public function handle(callable \$next, Request \$request)
+                {
+                    return \$next();
+                }
             }
-        }
-        EOD, "\v");
+            EOD,
+            "\v"
+        );
     }
 }

@@ -23,24 +23,39 @@ class CreateControllerCommand extends Command
             $directory = $this->getDirectoryFromFilePath($filename);
             $this->createDirectory($directory);
 
-            if (file_exists($filename)) {
-                $this->error('The controller already exists!');
-            } else {
-                $stub = $resource ? $this->getResourceControllerStub($name) : $this->getControllerStub($name);
-                file_put_contents($filename, $stub);
-                $this->info('Controller successfully created.');
-            }
+            $this->comment('Creating controller...');
+
+            file_exists($filename)
+                ? $this->showErrorMessage()
+                : (
+                    file_put_contents($filename, $stub = $resource ? $this->getResourceControllerStub($name) : $this->getControllerStub($name))
+                    && $this->showSuccessMessage()
+                );
         } catch (\Throwable $th) {
             $this->error($th->getMessage());
         }
     }
 
+    protected function showErrorMessage()
+    {
+        $this->showMessage('error', '- The controller already exists!');
+    }
+
+    protected function showSuccessMessage()
+    {
+        $this->showMessage('info', '- Controller successfully created.');
+    }
+
+    protected function showMessage($type, $message)
+    {
+        $this->line('');
+        $this->{$type}($message);
+        $this->line('');
+    }
+
     protected function getControllerFilePath($name)
     {
-        $controllerPath = $this->getControllerPath($name);
-        $filename = controller_path() . "/{$controllerPath}.php";
-
-        return $filename;
+        return controller_path() . "/{$this->getControllerPath($name)}.php";
     }
 
     protected function getDirectoryFromFilePath($filename)
@@ -57,97 +72,86 @@ class CreateControllerCommand extends Command
 
     protected function getControllerPath($name)
     {
-        $name = str_replace('\\', '/', $name);
-        $name = ltrim($name, '/');
-
-        return $name;
+        return ltrim(str_replace('\\', '/', $name), '/');
     }
 
-    private function getNamespace($name)
+    private function getNamespaceAndClassName($name)
     {
         $parts = explode('/', $name);
+        $className = ucfirst(array_pop($parts));
+        $namespace = count($parts) > 0 ? implode('\\', $parts) : '';
 
-        array_pop($parts);
-
-        return implode('\\', $parts);
-    }
-
-    private function getClassName($name)
-    {
-        $parts = explode('/', $name);
-        return ucfirst(end($parts));
+        return [$namespace, $className];
     }
 
     protected function getControllerStub($name)
     {
-        $namespace = $this->getNamespace($name);
-        $className = $this->getClassName($name);
+        list($namespace, $className) = $this->getNamespaceAndClassName($name);
 
         $namespaceString = $namespace ? "namespace App\Http\Controllers\\$namespace;" : 'namespace App\Http\Controllers;';
 
         return <<<EOD
-    <?php
-    
-    $namespaceString
-    
-    class $className
-    {
-        //
-    }
-    EOD;
+        <?php
+
+        $namespaceString
+
+        class $className
+        {
+            //
+        }
+        EOD;
     }
 
     protected function getResourceControllerStub($name)
     {
-        $namespace = $this->getNamespace($name);
-        $className = $this->getClassName($name);
+        list($namespace, $className) = $this->getNamespaceAndClassName($name);
 
         $namespaceString = $namespace ? "namespace App\Http\Controllers\\$namespace;" : 'namespace App\Http\Controllers;';
 
         return <<<EOD
-<?php
+        <?php
 
-$namespaceString
+        $namespaceString
 
-use Lib\Http\Request;
+        use Lib\Http\Request;
 
-class $className
-{
-    public function index()
-    {
-        //
-    }
-
-    public function create()
-    {
-        //
-    }
-
-    public function store(Request \$request)
-    {
-        //
-    }
-
-    public function show(Request \$request, string \$id)
-    {
-        //
-    }
-
-    public function edit(Request \$request, string \$id)
-    {
-        //
-    }
-
-    public function update(Request \$request, string \$id)
-    {
-        //
-    }
-
-    public function destroy(Request \$request, string \$id)
-    {
-        //
-    }
-}
-EOD;
+        class $className
+        {
+            public function index()
+            {
+                //
+            }
+        
+            public function create()
+            {
+                //
+            }
+        
+            public function store(Request \$request)
+            {
+                //
+            }
+        
+            public function show(Request \$request, string \$id)
+            {
+                //
+            }
+        
+            public function edit(Request \$request, string \$id)
+            {
+                //
+            }
+        
+            public function update(Request \$request, string \$id)
+            {
+                //
+            }
+        
+            public function destroy(Request \$request, string \$id)
+            {
+                //
+            }
+        }
+        EOD;
     }
 }

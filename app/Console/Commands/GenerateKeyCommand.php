@@ -19,14 +19,28 @@ class GenerateKeyCommand extends Command
             $envPath = $this->getEnvPath();
             $key = $this->generateKey();
 
-            if ($this->updateEnvFile($envPath, $key)) {
-                $this->info('Application key generated successfully and updated in .env file.');
-            } else {
-                $this->error('Failed to update the application key in .env file.');
-            }
+            $this->comment('Generating new application key...');
+
+            $this->updateEnvFile($envPath, $key) ?
+                $this->showSuccessMessage('- Application key generated successfully and updated in .env file.') :
+                $this->showErrorMessage('- Failed to update the application key in .env file.');
         } catch (\Throwable $th) {
-            $this->error($th->getMessage());
+            $this->showErrorMessage($th->getMessage());
         }
+    }
+
+    private function showErrorMessage($message)
+    {
+        $this->line('');
+        $this->error($message);
+        $this->line('');
+    }
+
+    private function showSuccessMessage($message)
+    {
+        $this->line('');
+        $this->info($message);
+        $this->line('');
     }
 
     /**
@@ -39,11 +53,14 @@ class GenerateKeyCommand extends Command
         return base_path() . '/.env';
     }
 
+    /**
+     * Generate a new key
+     * 
+     * @return string
+     */
     private function generateKey()
     {
-        $id = Str::random(10);
-        $random = Str::random(90);
-        return $id . '|' . $random;
+        return Str::random(10) . '|' . Str::random(90);
     }
 
     private function updateEnvFile($envPath, $key)

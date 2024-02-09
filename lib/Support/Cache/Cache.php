@@ -5,6 +5,7 @@ namespace Lib\Support\Cache;
 use Lib\Exception\CacheExceptions\EmptyKeyException;
 use Lib\Exception\ExceptionHandler;
 use Lib\Support\Cache\Contracts\CacheInterface;
+use Lib\Support\File;
 
 /**
  * Class Cache
@@ -99,9 +100,21 @@ class Cache implements CacheInterface
     {
         $success = true;
 
-        foreach (glob(self::getDir() . "*") as $file) {
-            if (!unlink($file)) {
-                $success = false;
+        if (is_dir(self::getDir())) {
+            $files = File::scandir(self::getDir());
+
+            foreach ($files as $file) {
+                if (is_file(self::getDir() . $file)) {
+                    if ($file === '.gitignore') {
+                        continue;
+                    }
+
+                    $success = File::delete(self::getDir() . $file);
+                }
+
+                if (is_dir(self::getDir() . $file !== 'views')) {
+                    $success = File::deleteDirectory(self::getDir() . $file);
+                }
             }
         }
 

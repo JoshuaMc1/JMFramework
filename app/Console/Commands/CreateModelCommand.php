@@ -26,27 +26,79 @@ class CreateModelCommand extends Command
             $className = $this->getClassName($name);
             $stub = $this->getModelStub($namespace, $className, $tableName);
 
-            if (file_exists($filename)) {
-                $this->error('The model already exists!');
-            } else {
-                file_put_contents($filename, $stub);
-                $this->info('Model created correctly.');
-            }
+            $this->comment('Creating model...');
+
+            $this->modelExists($filename)
+                ? $this->showErrorMessage('- The model already exists!')
+                : (
+                    file_put_contents($filename, $stub) &&
+                    $this->showSuccessMessage('- Model has been successfully created!')
+                );
         } catch (\Throwable $th) {
-            $this->error($th->getMessage());
+            $this->showErrorMessage($th->getMessage());
         }
+    }
+
+    private function showErrorMessage($message)
+    {
+        $this->line('');
+        $this->error($message);
+        $this->line('');
+    }
+
+    private function showSuccessMessage($message)
+    {
+        $this->line('');
+        $this->info($message);
+        $this->line('');
+    }
+
+    protected function modelExists($filename)
+    {
+        return file_exists($filename);
     }
 
     protected function getModelFilePath($name)
     {
-        $modelPath = $this->getModelPath($name);
-        $filename = model_path() . "/{$modelPath}.php";
-        return $filename;
+        return model_path() . '/' . $this->getModelPath($name) . '.php';
     }
 
-    protected function getDirectoryFromFilePath($filename)
+    protected function getModelPath($name)
     {
-        return dirname($filename);
+        return ltrim(str_replace('\\', '/', $name), '/');
+    }
+
+    protected function getModelStub($namespace, $className, $tableName)
+    {
+        return <<<EOD
+            <?php
+
+            namespace App\Models{$namespace};
+
+            use Lib\Model\Model;
+
+            class $className extends Model
+            {
+                protected \$table = '$tableName';
+            }
+            EOD;
+    }
+
+    protected function getNamespace($name)
+    {
+        $parts = explode('/', $name);
+        return count($parts) > 1 ? '\\' . implode('\\', array_slice($parts, 0, -1)) : '';
+    }
+
+    protected function getTableName($name)
+    {
+        return strtolower($this->getClassName($name));
+    }
+
+    protected function getClassName($name)
+    {
+        $parts = explode('/', $name);
+        return ucfirst(end($parts));
     }
 
     protected function createDirectory($directory)
@@ -56,47 +108,9 @@ class CreateModelCommand extends Command
         }
     }
 
-    protected function getModelPath($name)
+    protected function getDirectoryFromFilePath($filename)
     {
-        $name = str_replace('\\', '/', $name);
-        $name = ltrim($name, '/');
-
-        return $name;
-    }
-
-    protected function getModelStub($namespace, $className, $tableName)
-    {
-        return <<<EOD
-<?php
-
-namespace App\Models{$namespace};
-
-use Lib\Model\Model;
-
-class $className extends Model
-{
-    protected \$table = '$tableName';
-}
-EOD;
-    }
-
-    protected function getNamespace($name)
-    {
-        $parts = explode('/', $name);
-        $directory = count($parts) > 1 ? '\\' . implode('\\', array_slice($parts, 0, -1)) : '';
-        return $directory;
-    }
-
-    protected function getTableName($name)
-    {
-        $parts = explode('/', $name);
-        return strtolower(end($parts));
-    }
-
-    protected function getClassName($name)
-    {
-        $parts = explode('/', $name);
-        return ucfirst(end($parts));
+        return dirname($filename);
     }
 
     protected function pluralize($word)

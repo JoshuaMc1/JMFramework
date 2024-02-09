@@ -15,18 +15,36 @@ class InitCommand extends Command
 
     public function handle()
     {
-        Env::load();
+        try {
+            Env::load();
 
-        $directorySchemas = lib_path() . '/Database/Schemas/';
-        $directoryDatabase = database_path();
+            $directorySchemas = lib_path() . '/Database/Schemas/';
+            $directoryDatabase = database_path();
 
-        $this->info("Publishing initial tables...\n");
+            $this->comment("Publishing initial tables...");
 
-        $count = $this->copySchemasToDatabase($directorySchemas, $directoryDatabase);
+            $count = $this->copySchemasToDatabase($directorySchemas, $directoryDatabase);
 
-        $this->info("[{$count}] tables created and published successfully.\n");
+            $this->showSuccessMessage("- [{$count}] tables created and published successfully.");
 
-        $this->call('schema:run');
+            $this->call('schema:run');
+        } catch (\Throwable $th) {
+            $this->showErrorMessage($th->getMessage());
+        }
+    }
+
+    private function showErrorMessage($message)
+    {
+        $this->line('');
+        $this->error($message);
+        $this->line('');
+    }
+
+    private function showSuccessMessage($message)
+    {
+        $this->line('');
+        $this->info($message);
+        $this->line('');
     }
 
     private function copySchemasToDatabase($source, $destination)

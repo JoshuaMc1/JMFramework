@@ -14,19 +14,41 @@ class RunServerCommand extends Command
 
     public function handle()
     {
-        $host = $this->option('host');
-        $port = $this->option('port');
-        $doc_root = public_path();
-        $server_command = "php -S $host:$port -t $doc_root";
+        try {
+            $host = $this->option('host');
+            $port = $this->option('port');
+            $doc_root = public_path();
 
-        $server_process = popen($server_command, "r");
-        if ($server_process === false) {
-            $this->error("Failed to start server process");
-            return;
+            $server_command = "php -S $host:$port -t $doc_root";
+
+            $server_process = popen($server_command, "r");
+
+            $this->comment("Starting server...");
+
+            if ($server_process === false) {
+                $this->showErrorMessage("- Failed to start server.");
+                return;
+            }
+
+            $this->showSuccessMessage("- Server started successfully. Listening on http://$host:$port");
+
+            pclose($server_process);
+        } catch (\Throwable $th) {
+            $this->showErrorMessage($th->getMessage());
         }
+    }
 
-        $this->info("Server running at http://$host:$port");
+    private function showErrorMessage($message)
+    {
+        $this->line('');
+        $this->error($message);
+        $this->line('');
+    }
 
-        pclose($server_process);
+    private function showSuccessMessage($message)
+    {
+        $this->line('');
+        $this->info($message);
+        $this->line('');
     }
 }

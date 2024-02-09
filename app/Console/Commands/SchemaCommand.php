@@ -17,14 +17,30 @@ class SchemaCommand extends Command
 
     public function handle()
     {
-        Env::load();
+        try {
+            Env::load();
 
-        $directory = database_path();
-        $this->processSchemaFiles($directory);
+            $directory = database_path();
+            $this->processSchemaFiles($directory);
 
-        $this->line("");
-        $this->info("All schematic files were executed correctly.");
-        $this->line("");
+            $this->showSuccessMessage('- Schema executed successfully.');
+        } catch (\Throwable $th) {
+            $this->showErrorMessage($th->getMessage());
+        }
+    }
+
+    private function showErrorMessage($message)
+    {
+        $this->line('');
+        $this->error($message);
+        $this->line('');
+    }
+
+    private function showSuccessMessage($message)
+    {
+        $this->line('');
+        $this->info($message);
+        $this->line('');
     }
 
     private function processSchemaFiles(string $directory): void
@@ -44,8 +60,7 @@ class SchemaCommand extends Command
         $schema = null;
         $messages = [];
 
-        $this->line("");
-        $this->question("Executing schema files...");
+        $this->comment("Executing schema files...");
         $this->line("");
 
         foreach (array_reverse($files) as $file) {
