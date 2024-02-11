@@ -100,4 +100,8 @@ return [
     'get_public_url_error' => 'Error al obtener la URL pública',
     'get_public_url_error_message' => 'Se ha producido un error al obtener la URL pública. :message',
     'template_file_not_found' => 'Archivo de plantilla no encontrado [:templateFile]. Por favor, compruebe si el archivo de plantilla existe y añada la extensión (.jm.php).',
+    'invalid_operator' => 'Error de base de datos - Operador inválido',
+    'invalid_operator_message' => 'El operador no es válido. Compruebe el operador e inténtelo de nuevo.',
+    'table_not_set' => 'Error de tabla de base de datos',
+    'table_not_set_message' => 'El nombre de la tabla no está configurado o no existe. Compruebe el nombre de la tabla e inténtelo de nuevo.',
 ];

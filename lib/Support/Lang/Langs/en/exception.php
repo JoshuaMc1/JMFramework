@@ -100,4 +100,8 @@ return [
     'get_public_url_error' => 'Get Public URL Error',
     'get_public_url_error_message' => 'An error occurred while getting the public URL. :message',
     'template_file_not_found' => 'Template file not found [:templateFile]. Please check if the template file exists and add extension (.jm.php).',
+    'invalid_operator' => 'Database Error - Invalid Operator',
+    'invalid_operator_message' => 'The operator is invalid. Please check the operator and try again.',
+    'table_not_set' => 'Database Table Error',
+    'table_not_set_message' => 'The table name is not set. Please check the table name and try again.',
 ];
