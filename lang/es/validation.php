@@ -16,6 +16,11 @@ return [
     'in' => 'El campo :attribute debe ser uno de los siguientes valores :values.',
     'exists' => 'El :attribute seleccionado no existe en la tabla :table.',
     'unique' => 'El :attribute ya está en uso en la tabla :table.',
+    'same' => 'Los campos :attribute y :other deben coincidir.',
+    'ip' => 'El campo :attribute debe ser una dirección IP válida.',
+    'ipv4' => 'El campo :attribute debe ser una dirección IPv4 válida.',
+    'ipv6' => 'El campo :attribute debe ser una dirección IPv6 válida.',
+    'url' => 'El campo :attribute debe ser una URL válida.',
     'attributes' => [
         'name' => 'nombre',
     ],
