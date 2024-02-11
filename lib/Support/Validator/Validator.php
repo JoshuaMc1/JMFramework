@@ -2,6 +2,7 @@
 
 namespace Lib\Support\Validator;
 
+use Lib\Database\DB;
 use Lib\Support\Validator\Contracts\ValidatorInterface;
 
 /**
@@ -116,8 +117,8 @@ class Validator implements ValidatorInterface
         $params = $this->parseRuleParameters($rule);
 
         method_exists($this, $ruleName) ?
-            $this->addError($field, $this->getErrorMessage($ruleName, $field, ...$params)) :
-            $this->addError($field, $this->getErrorMessage($ruleName, $field));
+            $this->$ruleName($field, $value, $params) :
+            $this->addError($field, $this->getErrorMessage($ruleName, $field, ...$params));
     }
 
     /**
@@ -210,6 +211,197 @@ class Validator implements ValidatorInterface
     }
 
     /**
+     * Validate that a field is a string.
+     * 
+     * @param string $field The field being validated.
+     * @param mixed $value The field value.
+     */
+    protected function string(string $field, $value)
+    {
+        if (!is_string($value)) {
+            $this->addError($field, $this->getErrorMessage('string', $field));
+        }
+    }
+
+    /**
+     * Validate that a field is numeric.
+     * 
+     * @param string $field The field being validated.
+     * @param mixed $value The field value.
+     */
+    protected function numeric(string $field, $value)
+    {
+        if (!is_numeric($value)) {
+            $this->addError($field, $this->getErrorMessage('numeric', $field));
+        }
+    }
+
+    /**
+     * Validate that a field is a boolean.
+     * 
+     * @param string $field The field being validated.
+     * @param mixed $value The field value.
+     */
+    protected function boolean(string $field, $value)
+    {
+        if (!is_bool($value)) {
+            $this->addError($field, $this->getErrorMessage('boolean', $field));
+        }
+    }
+
+    /**
+     * Validate that a field is an integer.
+     * 
+     * @param string $field The field being validated.
+     * @param mixed $value The field value.
+     */
+    protected function integer(string $field, $value)
+    {
+        if (!is_int($value)) {
+            $this->addError($field, $this->getErrorMessage('integer', $field));
+        }
+    }
+
+    /**
+     * Validate that a field's value is greater than a specified value.
+     *
+     * @param string $field The field being validated.
+     * @param mixed $value The field value.
+     * @param array $params The validation parameters.
+     */
+    protected function gt(string $field, $value, array $params)
+    {
+        $threshold = isset($params[0]) ? $params[0] : null;
+
+        if ($threshold !== null && $value <= $threshold) {
+            $this->addError($field, $this->getErrorMessage('gt', $field, $threshold));
+        }
+    }
+
+    /**
+     * Validate that a field's value is less than a specified value.
+     * 
+     * @param string $field The field being validated.
+     * @param mixed $value The field value.
+     * @param array $params The validation parameters.
+     */
+    protected function lt(string $field, $value, array $params)
+    {
+        $threshold = isset($params[0]) ? $params[0] : null;
+
+        if ($threshold !== null && $value >= $threshold) {
+            $this->addError($field, $this->getErrorMessage('lt', $field, $threshold));
+        }
+    }
+
+    /**
+     * Validate that a field's value is in a specified list of values.
+     * 
+     * @param string $field The field being validated.
+     * @param mixed $value The field value.
+     * @param array $params The validation parameters.
+     */
+    protected function in(string $field, $value, array $params)
+    {
+        if (!in_array($value, $params)) {
+            $this->addError($field, $this->getErrorMessage('in', $field, ...$params));
+        }
+    }
+
+    /**
+     * Validate that a field's value is not in a specified list of values.
+     * 
+     * @param string $field The field being validated.
+     * @param mixed $value The field value.
+     * @param array $params The validation parameters.
+     */
+    protected function exists(string $field, $value, array $params)
+    {
+        if (DB::table($params[0])->where($params[1], $value)->exists()) {
+            $this->addError($field, $this->getErrorMessage('exists', $field, ...$params));
+        }
+    }
+
+    /**
+     * Validate that a field's value is unique in a specified table.
+     * 
+     * @param string $field The field being validated.
+     * @param mixed $value The field value.
+     * @param array $params The validation parameters.
+     */
+    protected function unique(string $field, $value, array $params)
+    {
+        if (DB::table($params[0])->where($params[1], $value)->unique()) {
+            $this->addError($field, $this->getErrorMessage('unique', $field, ...$params));
+        }
+    }
+
+    /**
+     * Validate that a field's value is a valid IP address.
+     * 
+     * @param string $field The field being validated.
+     * @param mixed $value The field value.
+     */
+    protected function ip(string $field, $value)
+    {
+        if (!filter_var($value, FILTER_VALIDATE_IP)) {
+            $this->addError($field, $this->getErrorMessage('ip', $field));
+        }
+    }
+
+    /**
+     * Validate that a field's value is a valid URL.
+     * 
+     * @param string $field The field being validated.
+     * @param mixed $value The field value.
+     */
+    protected function url(string $field, $value)
+    {
+        if (!filter_var($value, FILTER_VALIDATE_URL)) {
+            $this->addError($field, $this->getErrorMessage('url', $field));
+        }
+    }
+
+    /**
+     * Validate that a field's value is a valid IPv4 address.
+     * 
+     * @param string $field The field being validated.
+     * @param mixed $value The field value.
+     */
+    protected function ipv4(string $field, $value)
+    {
+        if (!filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            $this->addError($field, $this->getErrorMessage('ipv4', $field));
+        }
+    }
+
+    /**
+     * Validate that a field's value is a valid IPv6 address.
+     * 
+     * @param string $field The field being validated.
+     * @param mixed $value The field value.
+     */
+    protected function ipv6(string $field, $value)
+    {
+        if (!filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            $this->addError($field, $this->getErrorMessage('ipv6', $field));
+        }
+    }
+
+    /**
+     * Validate that a field's value is the same as another field.
+     * 
+     * @param string $field The field being validated.
+     * @param mixed $value The field value.
+     */
+    protected function same(string $field, $value, array $params)
+    {
+        if ($value !== $params[0]) {
+            $this->addError($field, $this->getErrorMessage('same', $field));
+        }
+    }
+
+    /**
      * Add an error message for a specific field.
      *
      * @param string $field The field being validated.
@@ -236,12 +428,44 @@ class Validator implements ValidatorInterface
 
         $message = str_replace(':attribute', $attributeName, $message);
 
-        if (isset($params[0])) {
-            $message = str_replace(':min', $params[0], $message);
-        }
+        switch ($rule) {
+            case 'min':
+            case 'max':
+                $message = str_replace(':min', $params[0], $message);
+                $message = str_replace(':max', $params[0], $message);
+                break;
 
-        if (isset($params[1])) {
-            $message = str_replace(':max', $params[1], $message);
+            case 'between':
+                $message = str_replace(':min', $params[0], $message);
+                $message = str_replace(':max', $params[1], $message);
+                break;
+
+            case 'gt':
+            case 'lt':
+                $message = str_replace(':threshold', $params[0], $message);
+                break;
+
+            case 'in':
+                $message = str_replace(':values', implode(', ', $params), $message);
+                break;
+
+            case 'exists':
+            case 'unique':
+                $message = str_replace(':table', $params[0], $message);
+                break;
+
+            case 'same':
+                $message = str_replace(':other', $params[0], $message);
+                break;
+
+            case 'ip':
+            case 'url':
+            case 'ipv4':
+            case 'ipv6':
+                break;
+
+            default:
+                break;
         }
 
         return $message;
