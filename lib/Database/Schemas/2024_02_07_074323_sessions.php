@@ -10,25 +10,25 @@ return new class implements Schema
     {
         SchemaForge::createTable('sessions', [
             $column->id()
-                ->exec(),
+                ->generate(),
             $column->unsignedBigInteger('user_id')
-                ->exec(),
+                ->generate(),
             $column->string('ip_address', 45)
                 ->notNullable()
-                ->exec(),
+                ->generate(),
             $column->string('user_agent')
                 ->notNullable()
-                ->exec(),
+                ->generate(),
             $column->integer('last_activity')
                 ->notNullable()
-                ->exec(),
+                ->generate(),
             $column->timestamps()
-                ->exec(),
+                ->generate(),
             $column->foreign('user_id')
                 ->references('users')
                 ->onDelete(ColumnDefinition::CASCADE)
                 ->onUpdate(ColumnDefinition::CASCADE)
-                ->exec(),
+                ->generate(),
         ]);
     }
 

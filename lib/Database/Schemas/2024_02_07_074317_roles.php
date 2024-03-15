@@ -9,10 +9,10 @@ return new class implements Schema
     public function up(ColumnDefinition $column): void
     {
         SchemaForge::createTable('roles', [
-            $column->id()->exec(),
-            $column->string('name')->notNullable()->exec(),
-            $column->text('description')->nullable()->exec(),
-            $column->timestamps()->exec(),
+            $column->id()->generate(),
+            $column->string('name')->notNullable()->generate(),
+            $column->text('description')->nullable()->generate(),
+            $column->timestamps()->generate(),
         ]);
     }
 

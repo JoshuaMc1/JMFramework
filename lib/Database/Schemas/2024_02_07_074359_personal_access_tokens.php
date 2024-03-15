@@ -10,25 +10,25 @@ return new class implements Schema
     {
         SchemaForge::createTable('personal_access_tokens', [
             $column->id()
-                ->exec(),
+                ->generate(),
             $column->unsignedBigInteger('user_id')
-                ->exec(),
+                ->generate(),
             $column->string('name')
                 ->nullable()
-                ->exec(),
+                ->generate(),
             $column->string('token')
                 ->notNullable()
-                ->exec(),
+                ->generate(),
             $column->timestamp('last_used_at')
                 ->nullable()
-                ->exec(),
+                ->generate(),
             $column->timestamps()
-                ->exec(),
+                ->generate(),
             $column->foreign('user_id')
                 ->references('users')
                 ->onDelete(ColumnDefinition::CASCADE)
                 ->onUpdate(ColumnDefinition::CASCADE)
-                ->exec(),
+                ->generate(),
         ]);
     }
 

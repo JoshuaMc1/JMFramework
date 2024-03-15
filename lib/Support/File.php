@@ -95,6 +95,18 @@ class File
     }
 
     /**
+     * Check if a path is a file.
+     * 
+     * @param string $path The path to check.
+     * 
+     * @return bool True if the path is a file, false otherwise.
+     */
+    public static function isFile(string $path): bool
+    {
+        return is_file($path);
+    }
+
+    /**
      * Create a directory.
      *
      * @param string $path The path to the directory.
@@ -133,6 +145,13 @@ class File
         return rmdir($path);
     }
 
+    /**
+     * Get a list of files in a directory.
+     * 
+     * @param string $path The path to the directory.
+     * 
+     * @return array A list of files in the directory.
+     */
     public static function scandir(string $path): array
     {
         return array_diff(scandir($path), ['.', '..']);

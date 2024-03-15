@@ -86,8 +86,8 @@ class SchemaCreateCommand extends Command
                 public function up(ColumnDefinition \$column): void
                 {
                     SchemaForge::createTable('{$name}', [
-                        \$column->id()->exec(),
-                        \$column->timestamps()->exec(),
+                        \$column->id()->generate(),
+                        \$column->timestamps()->generate(),
                     ]);
                 }
 

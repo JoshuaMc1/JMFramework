@@ -664,7 +664,7 @@ class ColumnDefinition implements InputInterface
      * 
      * @return string
      */
-    public function exec(): string
+    public function generate(): string
     {
         $string = implode(", ", $this->column);
 

@@ -7,6 +7,14 @@ use Lib\Exception\ExceptionHandler;
 use Lib\Model\Session as SessionModel;
 use Lib\Http\Auth;
 
+/**
+ * Request Class
+ * 
+ * This class is responsible for managing incoming requests and extracting data from them.
+ * It provides methods for accessing request parameters, headers, and data.
+ * 
+ * @package Lib\Http
+ */
 class Request
 {
     /**
