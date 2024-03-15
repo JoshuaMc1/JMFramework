@@ -44,8 +44,8 @@ class Cache implements CacheInterface
         $file = self::getFilePath($key);
         $directory = dirname($file);
 
-        if (!is_dir($directory)) {
-            mkdir($directory, 0777, true);
+        if (!File::isDirectory($directory)) {
+            File::makeDirectory($directory, 0777, true);
         }
 
         if (!is_writable($directory)) {
@@ -54,7 +54,7 @@ class Cache implements CacheInterface
 
         $value = config('cache.secure') ? encrypt($value) : serialize($value);
 
-        return file_put_contents($file, $value) !== false;
+        return File::write($file, $value) !== false;
     }
 
     /**
@@ -68,7 +68,9 @@ class Cache implements CacheInterface
         $file = self::getFilePath($key);
 
         if (self::has($key)) {
-            return config('cache.secure') ? decrypt(file_get_contents($file)) : unserialize(file_get_contents($file));
+            return config('cache.secure') ?
+                decrypt(file_get_contents($file)) :
+                unserialize(file_get_contents($file));
         }
 
         return null;
@@ -84,8 +86,8 @@ class Cache implements CacheInterface
     {
         $file = self::getFilePath($key);
 
-        if (file_exists($file)) {
-            return unlink($file);
+        if (File::exists($file)) {
+            return File::delete($file);
         }
 
         return false;
@@ -100,11 +102,11 @@ class Cache implements CacheInterface
     {
         $success = true;
 
-        if (is_dir(self::getDir())) {
+        if (File::isDirectory(self::getDir())) {
             $files = File::scandir(self::getDir());
 
             foreach ($files as $file) {
-                if (is_file(self::getDir() . $file)) {
+                if (File::isFile(self::getDir() . $file)) {
                     if ($file === '.gitignore') {
                         continue;
                     }
@@ -112,7 +114,7 @@ class Cache implements CacheInterface
                     $success = File::delete(self::getDir() . $file);
                 }
 
-                if (is_dir(self::getDir() . $file !== 'views')) {
+                if (File::isDirectory(self::getDir() . $file !== 'views')) {
                     $success = File::deleteDirectory(self::getDir() . $file);
                 }
             }
@@ -132,7 +134,9 @@ class Cache implements CacheInterface
         $values = [];
 
         foreach ($keys as $key) {
-            $values[$key] = config('cache.secure') ? decrypt(self::get($key)) : unserialize(self::get($key));
+            $values[$key] = config('cache.secure')
+                ? decrypt(self::get($key)) :
+                unserialize(self::get($key));
         }
 
         return $values;
@@ -150,7 +154,9 @@ class Cache implements CacheInterface
         $success = true;
 
         foreach ($values as $key => $value) {
-            $value = config('cache.secure') ? encrypt($value) : serialize($value);
+            $value = config('cache.secure') ?
+                encrypt($value) :
+                serialize($value);
 
             if (!self::set($key, $value, $ttl)) {
                 $success = false;
@@ -188,7 +194,7 @@ class Cache implements CacheInterface
 
         foreach (glob(self::getDir() . "*") as $file) {
             if (filemtime($file) + config('cache.ttl') < $now) {
-                unlink($file);
+                File::delete($file);
             }
         }
     }

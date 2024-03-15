@@ -9,9 +9,9 @@ return new class implements Schema
     public function up(ColumnDefinition $column): void
     {
         SchemaForge::createTable('permissions', [
-            $column->id()->exec(),
-            $column->string('name')->notNullable()->exec(),
-            $column->timestamps()->exec(),
+            $column->id()->generate(),
+            $column->string('name')->notNullable()->generate(),
+            $column->timestamps()->generate(),
         ]);
     }
 

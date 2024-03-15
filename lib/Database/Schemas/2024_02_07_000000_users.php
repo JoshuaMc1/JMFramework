@@ -9,11 +9,11 @@ return new class implements Schema
     public function up(ColumnDefinition $column): void
     {
         SchemaForge::createTable('users', [
-            $column->id()->exec(),
-            $column->string('name')->exec(),
-            $column->string('email')->exec(),
-            $column->string('password')->exec(),
-            $column->timestamps()->exec(),
+            $column->id()->generate(),
+            $column->string('name')->generate(),
+            $column->string('email')->generate(),
+            $column->string('password')->generate(),
+            $column->timestamps()->generate(),
         ]);
     }
 

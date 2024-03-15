@@ -10,21 +10,21 @@ return new class implements Schema
     {
         SchemaForge::createTable('user_roles', [
             $column->id()
-                ->exec(),
+                ->generate(),
             $column->unsignedBigInteger('user_id')
-                ->exec(),
+                ->generate(),
             $column->unsignedBigInteger('role_id')
-                ->exec(),
+                ->generate(),
             $column->foreign('user_id')
                 ->references('users')
                 ->onDelete(ColumnDefinition::CASCADE)
                 ->onUpdate(ColumnDefinition::CASCADE)
-                ->exec(),
+                ->generate(),
             $column->foreign('role_id')
                 ->references('roles')
                 ->onDelete(ColumnDefinition::CASCADE)
                 ->onUpdate(ColumnDefinition::CASCADE)
-                ->exec()
+                ->generate()
         ]);
     }
 

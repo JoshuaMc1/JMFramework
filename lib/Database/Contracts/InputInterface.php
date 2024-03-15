@@ -98,5 +98,5 @@ interface InputInterface
 
     public function onDelete(string $action = ColumnDefinition::CASCADE): self;
 
-    public function exec(): string;
+    public function generate(): string;
 }
