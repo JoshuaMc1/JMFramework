@@ -17,16 +17,16 @@ class Cors
     public static function handleCors()
     {
         // Allow any origin or restrict to configured origins.
-        $allowedOrigin = config('cors.allowed_origin') ?? '*';
-        $origin = self::getOrigin();
+        $allowedOrigin = config('cors.allowed_origin', '*');
+        $origin = static::getOrigin();
 
-        if (self::isOriginAllowed($origin, $allowedOrigin)) {
+        if (static::isOriginAllowed($origin, $allowedOrigin)) {
             header("Access-Control-Allow-Origin: $origin");
         }
 
         // Handle preflight requests.
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-            self::handlePreflight();
+            static::handlePreflight();
             exit();
         }
 

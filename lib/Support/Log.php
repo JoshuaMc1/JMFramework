@@ -3,8 +3,10 @@
 namespace Lib\Support;
 
 use Exception;
-use Lib\Exception\CustomException;
-use Lib\Exception\ExceptionHandler;
+use Lib\Exception\{
+    CustomException,
+    ExceptionHandler
+};
 use Throwable;
 
 /**

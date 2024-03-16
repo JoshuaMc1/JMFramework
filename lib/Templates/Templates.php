@@ -37,7 +37,9 @@ class Templates
             $templateContent = str_replace('{{' . $key . '}}', $value, $templateContent);
         }
 
-        http_response_code($data['ERROR_CODE']);
+        ($data['ERROR_CODE'] instanceof int) ?
+            http_response_code($data['ERROR_CODE']) :
+            http_response_code(500);
 
         echo $templateContent;
         die();

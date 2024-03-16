@@ -36,6 +36,18 @@ class ExceptionHandler
 
         Log::debug($exception, $errorMessage);
 
-        ErrorHandler::renderError($errorCode, $errorTitle, $errorMessage);
+        if ($errorCode === 404) {
+            ErrorHandler::renderError($errorCode, $errorTitle, $errorMessage);
+            return;
+        }
+
+        if ($errorCode === 401) {
+            ErrorHandler::renderError($errorCode, $errorTitle, $errorMessage);
+            return;
+        }
+
+        (config('app.env') === 'local') ?
+            ErrorHandler::renderError($errorCode, $errorTitle, $errorMessage) :
+            ErrorHandler::renderError(500, 'Internal Server Error', 'An internal server error occurred.');
     }
 }

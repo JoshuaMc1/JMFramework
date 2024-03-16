@@ -4,11 +4,11 @@ namespace Lib\Http\Middleware;
 
 use Exception;
 use Lib\Exception\ExceptionHandler;
-use Lib\Exception\RouteExceptions\CSRFTokenException;
 use Lib\Http\CsrfTokenManager;
 use Lib\Http\Middleware\Contracts\MiddlewareInterface;
 use Lib\Http\Request;
-use Lib\Route;
+use Lib\Router\Exceptions\CSRFTokenException;
+use Lib\Router\Route;
 
 class CsrfMiddleware implements MiddlewareInterface
 {
