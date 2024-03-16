@@ -10,4 +10,11 @@ interface KernelInterface
      * @return void
      */
     public static function boot();
+
+    /**
+     * Registers the routes for the application.
+     *
+     * @return void
+     */
+    public static function register();
 }

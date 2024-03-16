@@ -1,6 +1,6 @@
 <?php
 
-namespace Lib\Exception\RouteExceptions;
+namespace Lib\Router\Exceptions;
 
 use Lib\Exception\CustomException;
 

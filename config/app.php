@@ -9,6 +9,13 @@ return [
     'name' => env('APP_NAME', 'JMFramework'),
 
     /**
+     * Default application environment
+     * 
+     * The environment of the application
+     **/
+    'env' => env('APP_ENV', 'production'),
+
+    /**
      * Default application URL
      * 
      * The URL of the application
@@ -20,14 +27,14 @@ return [
      * 
      * The timezone of the application
      **/
-    'timezone' => 'America/Tegucigalpa',
+    'timezone' => env('APP_TIMEZONE', 'UTC'),
 
     /**
      * Default application locale
      * 
      * The locale of the application
      **/
-    'locale' => 'es',
+    'locale' => env('APP_LOCALE', 'en'),
 
     /**
      * Default application key 

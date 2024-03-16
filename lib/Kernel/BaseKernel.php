@@ -24,6 +24,11 @@ use Lib\Support\Env;
 class BaseKernel implements KernelInterface
 {
     /**
+     * An array of additional routes to be registered.
+     */
+    public static $additionalRoutes = [];
+
+    /**
      * Bootstraps the application.
      *
      * @return void
@@ -35,6 +40,10 @@ class BaseKernel implements KernelInterface
         self::checkAppKey();
         self::handleCors();
         self::generateCsrfToken();
+    }
+
+    public static function register()
+    {
         self::registerRoutes();
     }
 
@@ -86,10 +95,14 @@ class BaseKernel implements KernelInterface
     private static function registerRoutes()
     {
         $routes = self::getRoutes();
+
+        if (!empty(self::$additionalRoutes)) {
+            $routes = array_merge($routes, self::$additionalRoutes);
+        }
+
         self::requireRoutes($routes);
 
-        $namedRoutes = Route::getNamedRoutes();
-        Request::setNamedRoutes($namedRoutes);
+        Request::setNamedRoutes(Route::getNamedRoutes());
 
         Route::dispatch();
     }
@@ -102,8 +115,8 @@ class BaseKernel implements KernelInterface
     private static function getRoutes()
     {
         return [
-            routes_path() . '/web.php',
-            routes_path() . '/api.php',
+            sprintf('%s/web.php', routes_path()),
+            sprintf('%s/api.php', routes_path()),
         ];
     }
 

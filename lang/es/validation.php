@@ -21,7 +21,5 @@ return [
     'ipv4' => 'El campo :attribute debe ser una dirección IPv4 válida.',
     'ipv6' => 'El campo :attribute debe ser una dirección IPv6 válida.',
     'url' => 'El campo :attribute debe ser una URL válida.',
-    'attributes' => [
-        'name' => 'nombre',
-    ],
+    'attributes' => [],
 ];

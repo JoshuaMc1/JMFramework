@@ -10,19 +10,19 @@ return new class implements Schema
     {
         SchemaForge::createTable('role_permissions', [
             $column->id()
-                ->exec(),
+                ->generate(),
             $column->unsignedBigInteger('role_id')
-                ->exec(),
+                ->generate(),
             $column->unsignedBigInteger('permission_id')
-                ->exec(),
+                ->generate(),
             $column->foreign('role_id')
                 ->references('roles')
-                ->exec(),
+                ->generate(),
             $column->foreign('permission_id')
                 ->references('permissions')
                 ->onDelete(ColumnDefinition::CASCADE)
                 ->onUpdate(ColumnDefinition::CASCADE)
-                ->exec()
+                ->generate()
         ]);
     }
 

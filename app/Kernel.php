@@ -19,6 +19,42 @@ class Kernel implements KernelInterface
      */
     public static function boot()
     {
+        /**
+         * Bootstraps the application.
+         * 
+         * @see \Lib\Kernel\BaseKernel
+         */
         BaseKernel::boot();
+    }
+
+    /**
+     * Registers the routes for the application.
+     * 
+     * @return void
+     */
+    public static function register()
+    {
+        /**
+         * Add additional routes
+         * 
+         * @see \Lib\Kernel\BaseKernel
+         * 
+         * @var array
+         * 
+         * @example
+         * 
+         * BaseKernel::$additionalRoutes = [
+         *    sprintf('%s/admin.php', routes_path()),
+         *    ...
+         *  ]
+         */
+        BaseKernel::$additionalRoutes = [];
+
+        /**
+         * Register the routes for the application.
+         * 
+         * @see \Lib\Kernel\BaseKernel
+         */
+        BaseKernel::register();
     }
 }

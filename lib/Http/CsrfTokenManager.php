@@ -47,8 +47,7 @@ class CsrfTokenManager
      * */
     public static function csrf(): string
     {
-        $token = self::generateToken();
-        return '<input type="hidden" name="_token" value="' . $token . '">';
+        return '<input type="hidden" name="_token" value="' . static::generateToken() . '">';
     }
 
     /**

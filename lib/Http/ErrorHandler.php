@@ -68,10 +68,8 @@ class ErrorHandler
             die();
         }
 
-        if (strpos($contentType, 'application/json') !== false) {
-            self::renderErrorJson($errorCode, $errorTitle, $errorMessage);
-        } else {
-            self::renderErrorHtml($errorCode, $errorTitle, $errorMessage);
-        }
+        (strpos($contentType, 'application/json') !== false) ?
+            static::renderErrorJson($errorCode, $errorTitle, $errorMessage) :
+            static::renderErrorHtml($errorCode, $errorTitle, $errorMessage);
     }
 }

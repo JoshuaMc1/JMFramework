@@ -45,7 +45,7 @@ class Connection
                 ]
             );
         } catch (\PDOException $exception) {
-            throw new DatabaseConnectionException($exception->getCode(), $exception->getMessage());
+            throw new DatabaseConnectionException($exception->getCode() !== 0 ? $exception->getCode() : 0101, $exception->getMessage());
         }
     }
 
