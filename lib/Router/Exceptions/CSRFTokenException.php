@@ -13,6 +13,6 @@ class CSRFTokenException extends CustomException
 {
     public function __construct()
     {
-        parent::__construct(403, lang('csrf_token_error'), lang('csrf_token_error_message'));
+        parent::__construct(403, lang('exception.csrf_token_error'), lang('exception.csrf_token_error_message'));
     }
 }

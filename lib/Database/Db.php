@@ -2,13 +2,13 @@
 
 namespace Lib\Database;
 
+use Illuminate\Database\ConnectionInterface;
 use Lib\Connection\Connection;
 use Lib\Exception\CustomException;
-use PDO;
 
 class DB
 {
-    protected $connection;
+    protected ConnectionInterface $connection;
     protected $table;
     protected $whereClause = '';
     protected $selectClause = '';
@@ -63,11 +63,8 @@ class DB
         $this->joinClause = !empty($this->joinClause) ? " $this->joinClause" : "";
 
         $sql = "$this->selectClause FROM $this->table$this->joinClause$this->whereClause$this->groupClause";
-        $stmt = $this->connection->prepare($sql);
 
-        $stmt->execute($this->params);
-
-        return $stmt->fetchAll(PDO::FETCH_OBJ);
+        return $this->connection->select($sql, $this->params);
     }
 
     public function first()
@@ -99,36 +96,20 @@ class DB
 
     public function insert(array $data)
     {
-        $columns = implode(', ', array_keys($data));
-        $placeholders = implode(', ', array_fill(0, count($data), '?'));
-        $sql = "INSERT INTO $this->table ($columns) VALUES ($placeholders)";
-        $stmt = $this->connection->prepare($sql);
-        $stmt->execute(array_values($data));
-        return $this->connection->lastInsertId();
+        $result = $this->connection->table($this->table)->insert($data);
+        return $result ? $this->connection->getPdo()->lastInsertId() : null;
     }
 
     public function update(array $data)
     {
-        $setClause = implode(', ', array_map(function ($key) {
-            return "$key = ?";
-        }, array_keys($data)));
-
-        $sql = "UPDATE $this->table SET $setClause $this->whereClause";
-        $stmt = $this->connection->prepare($sql);
-
-        $stmt->execute(array_merge(array_values($data), $this->params));
-
-        return $stmt->rowCount();
+        $result = $this->connection->table($this->table)->whereRaw($this->whereClause, $this->params)->update($data);
+        return $result;
     }
 
     public function delete()
     {
-        $sql = "DELETE FROM $this->table $this->whereClause";
-        $stmt = $this->connection->prepare($sql);
-
-        $stmt->execute($this->params);
-
-        return $stmt->rowCount();
+        $result = $this->connection->table($this->table)->whereRaw($this->whereClause, $this->params)->delete();
+        return $result;
     }
 
     public function exists(): bool

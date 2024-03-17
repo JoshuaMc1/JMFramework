@@ -37,7 +37,8 @@ class SchemaForge implements SchemaForgeInterface
      */
     public function __construct()
     {
-        self::$connection = (new Connection())->getConnection();
+        self::$connection = (new Connection())
+            ->getConnection();
     }
 
     /**
@@ -55,10 +56,9 @@ class SchemaForge implements SchemaForgeInterface
 
             $columns = implode(', ', array_values($columns));
 
-            $statement = self::$connection->prepare("CREATE TABLE IF NOT EXISTS {$tableName} ({$columns})");
-            $result = $statement->execute();
+            $statement = self::$connection->statement("CREATE TABLE IF NOT EXISTS {$tableName} ({$columns})");
 
-            if ($result === false) {
+            if ($statement === false) {
                 throw new \PDOException("Failed to create table");
             }
 
@@ -82,10 +82,9 @@ class SchemaForge implements SchemaForgeInterface
         try {
             self::getInstance();
 
-            $statement = self::$connection->prepare("DROP TABLE IF EXISTS {$tableName}");
-            $result = $statement->execute();
+            $statement = self::$connection->statement("DROP TABLE IF EXISTS {$tableName}");
 
-            if ($result === false) {
+            if ($statement === false) {
                 throw new \PDOException("Failed to drop table");
             }
 

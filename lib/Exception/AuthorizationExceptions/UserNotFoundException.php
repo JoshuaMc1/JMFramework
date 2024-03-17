@@ -20,8 +20,8 @@ class UserNotFoundException extends CustomException
     public function __construct($userId)
     {
         $errorCode = 2206;
-        $errorTitle = lang('user_not_found');
-        $errorMessage = lang('user_not_found_message', ['userId' => $userId]);
+        $errorTitle = lang('exception.user_not_found');
+        $errorMessage = lang('exception.user_not_found_message', ['userId' => $userId]);
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }
 }

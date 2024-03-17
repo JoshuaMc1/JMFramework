@@ -6,8 +6,666 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Bienvenido a JMFramework</title>
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <title>{{ lang('index.welcome') }}</title>
+    <style type="text/css">
+        /*! tailwindcss v3.4.1 | MIT License | https://tailwindcss.com*/
+        *,
+        :after,
+        :before {
+            border: 0 solid #e5e7eb;
+            box-sizing: border-box
+        }
+
+        :after,
+        :before {
+            --tw-content: ""
+        }
+
+        :host,
+        html {
+            -webkit-text-size-adjust: 100%;
+            font-feature-settings: normal;
+            -webkit-tap-highlight-color: transparent;
+            font-family: ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+            font-variation-settings: normal;
+            line-height: 1.5;
+            -moz-tab-size: 4;
+            -o-tab-size: 4;
+            tab-size: 4
+        }
+
+        body {
+            line-height: inherit;
+            margin: 0
+        }
+
+        hr {
+            border-top-width: 1px;
+            color: inherit;
+            height: 0
+        }
+
+        abbr:where([title]) {
+            -webkit-text-decoration: underline dotted;
+            text-decoration: underline dotted
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-size: inherit;
+            font-weight: inherit
+        }
+
+        a {
+            color: inherit;
+            text-decoration: inherit
+        }
+
+        b,
+        strong {
+            font-weight: bolder
+        }
+
+        code,
+        kbd,
+        pre,
+        samp {
+            font-feature-settings: normal;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+            font-size: 1em;
+            font-variation-settings: normal
+        }
+
+        small {
+            font-size: 80%
+        }
+
+        sub,
+        sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline
+        }
+
+        sub {
+            bottom: -.25em
+        }
+
+        sup {
+            top: -.5em
+        }
+
+        table {
+            border-collapse: collapse;
+            border-color: inherit;
+            text-indent: 0
+        }
+
+        button,
+        input,
+        optgroup,
+        select,
+        textarea {
+            font-feature-settings: inherit;
+            color: inherit;
+            font-family: inherit;
+            font-size: 100%;
+            font-variation-settings: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+            margin: 0;
+            padding: 0
+        }
+
+        button,
+        select {
+            text-transform: none
+        }
+
+        [type=button],
+        [type=reset],
+        [type=submit],
+        button {
+            -webkit-appearance: button;
+            background-color: transparent;
+            background-image: none
+        }
+
+        :-moz-focusring {
+            outline: auto
+        }
+
+        :-moz-ui-invalid {
+            box-shadow: none
+        }
+
+        progress {
+            vertical-align: baseline
+        }
+
+        ::-webkit-inner-spin-button,
+        ::-webkit-outer-spin-button {
+            height: auto
+        }
+
+        [type=search] {
+            -webkit-appearance: textfield;
+            outline-offset: -2px
+        }
+
+        ::-webkit-search-decoration {
+            -webkit-appearance: none
+        }
+
+        ::-webkit-file-upload-button {
+            -webkit-appearance: button;
+            font: inherit
+        }
+
+        summary {
+            display: list-item
+        }
+
+        blockquote,
+        dd,
+        dl,
+        figure,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        hr,
+        p,
+        pre {
+            margin: 0
+        }
+
+        fieldset {
+            margin: 0
+        }
+
+        fieldset,
+        legend {
+            padding: 0
+        }
+
+        menu,
+        ol,
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0
+        }
+
+        dialog {
+            padding: 0
+        }
+
+        textarea {
+            resize: vertical
+        }
+
+        input::-moz-placeholder,
+        textarea::-moz-placeholder {
+            color: #9ca3af;
+            opacity: 1
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #9ca3af;
+            opacity: 1
+        }
+
+        [role=button],
+        button {
+            cursor: pointer
+        }
+
+        :disabled {
+            cursor: default
+        }
+
+        audio,
+        canvas,
+        embed,
+        iframe,
+        img,
+        object,
+        svg,
+        video {
+            display: block;
+            vertical-align: middle
+        }
+
+        img,
+        video {
+            height: auto;
+            max-width: 100%
+        }
+
+        [hidden] {
+            display: none
+        }
+
+        *,
+        :after,
+        :before {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgba(59, 130, 246, .5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia:
+        }
+
+        ::backdrop {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgba(59, 130, 246, .5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia:
+        }
+
+        .container {
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%
+        }
+
+        @media (min-width:640px) {
+            .container {
+                max-width: 640px
+            }
+        }
+
+        @media (min-width:768px) {
+            .container {
+                max-width: 768px
+            }
+        }
+
+        @media (min-width:1024px) {
+            .container {
+                max-width: 1024px
+            }
+        }
+
+        @media (min-width:1280px) {
+            .container {
+                max-width: 1280px
+            }
+        }
+
+        @media (min-width:1536px) {
+            .container {
+                max-width: 1536px
+            }
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        .mt-12 {
+            margin-top: 3rem
+        }
+
+        .mt-2 {
+            margin-top: .5rem
+        }
+
+        .mt-4 {
+            margin-top: 1rem
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem
+        }
+
+        .flex {
+            display: flex
+        }
+
+        .grid {
+            display: grid
+        }
+
+        .h-16 {
+            height: 4rem
+        }
+
+        .h-6 {
+            height: 1.5rem
+        }
+
+        .h-full {
+            height: 100%
+        }
+
+        .min-h-screen {
+            min-height: 100vh
+        }
+
+        .w-6 {
+            width: 1.5rem
+        }
+
+        .w-auto {
+            width: auto
+        }
+
+        .max-w-7xl {
+            max-width: 80rem
+        }
+
+        .scale-100 {
+            --tw-scale-x: 1;
+            --tw-scale-y: 1
+        }
+
+        .scale-100,
+        .transform {
+            transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr))
+        }
+
+        .flex-row {
+            flex-direction: row
+        }
+
+        .flex-col {
+            flex-direction: column
+        }
+
+        .place-items-center {
+            place-items: center
+        }
+
+        .items-center {
+            align-items: center
+        }
+
+        .justify-center {
+            justify-content: center
+        }
+
+        .gap-2 {
+            gap: .5rem
+        }
+
+        .gap-6 {
+            gap: 1.5rem
+        }
+
+        .space-y-4>:not([hidden])~:not([hidden]) {
+            --tw-space-y-reverse: 0;
+            margin-bottom: calc(1rem*var(--tw-space-y-reverse));
+            margin-top: calc(1rem*(1 - var(--tw-space-y-reverse)))
+        }
+
+        .rounded-lg {
+            border-radius: .5rem
+        }
+
+        .rounded-md {
+            border-radius: .375rem
+        }
+
+        .bg-neutral-600 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(82 82 82/var(--tw-bg-opacity))
+        }
+
+        .bg-neutral-800 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(38 38 38/var(--tw-bg-opacity))
+        }
+
+        .bg-neutral-900 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(23 23 23/var(--tw-bg-opacity))
+        }
+
+        .p-2 {
+            padding: .5rem
+        }
+
+        .p-6 {
+            padding: 1.5rem
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem
+        }
+
+        .py-24 {
+            padding-bottom: 6rem;
+            padding-top: 6rem
+        }
+
+        .text-center {
+            text-align: center
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+            line-height: 2.25rem
+        }
+
+        .text-base {
+            font-size: 1rem;
+            line-height: 1.5rem
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+            line-height: 1.75rem
+        }
+
+        .font-bold {
+            font-weight: 700
+        }
+
+        .font-semibold {
+            font-weight: 600
+        }
+
+        .leading-7 {
+            line-height: 1.75rem
+        }
+
+        .tracking-tight {
+            letter-spacing: -.025em
+        }
+
+        .text-gray-200 {
+            --tw-text-opacity: 1;
+            color: rgb(229 231 235/var(--tw-text-opacity))
+        }
+
+        .text-gray-300 {
+            --tw-text-opacity: 1;
+            color: rgb(209 213 219/var(--tw-text-opacity))
+        }
+
+        .text-orange-400 {
+            --tw-text-opacity: 1;
+            color: rgb(251 146 60/var(--tw-text-opacity))
+        }
+
+        .text-red-400 {
+            --tw-text-opacity: 1;
+            color: rgb(248 113 113/var(--tw-text-opacity))
+        }
+
+        .text-white {
+            --tw-text-opacity: 1;
+            color: rgb(255 255 255/var(--tw-text-opacity))
+        }
+
+        .antialiased {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale
+        }
+
+        @media (min-width:640px) {
+            .sm\:flex-row {
+                flex-direction: row
+            }
+
+            .sm\:py-32 {
+                padding-bottom: 8rem;
+                padding-top: 8rem
+            }
+
+            .sm\:text-5xl {
+                font-size: 3rem;
+                line-height: 1
+            }
+        }
+
+        @media (min-width:768px) {
+            .md\:col-span-2 {
+                grid-column: span 2/span 2
+            }
+
+            .md\:mt-0 {
+                margin-top: 0
+            }
+
+            .md\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr))
+            }
+
+            .md\:items-start {
+                align-items: flex-start
+            }
+        }
+
+        @media (min-width:1024px) {
+            .lg\:flex-row {
+                flex-direction: row
+            }
+
+            .lg\:justify-between {
+                justify-content: space-between
+            }
+
+            .lg\:gap-8 {
+                gap: 2rem
+            }
+
+            .lg\:p-8 {
+                padding: 2rem
+            }
+
+            .lg\:px-8 {
+                padding-left: 2rem;
+                padding-right: 2rem
+            }
+        }
+    </style>
 </head>
 
 <body class="antialiased">
@@ -43,29 +701,22 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
                     <div class="scale-100 p-6 bg-neutral-800 rounded-lg md:col-span-2">
                         <div class="space-y-4">
-                            <h1 class="text-2xl font-bold text-white">Bienvenido a JMFramework</h1>
+                            <h1 class="text-2xl font-bold text-white">{{ lang('index.welcome') }}</h1>
                             <p class="text-gray-200">
-                                JMFramework es un framework PHP que se enfoca en la organización y estructuración de
-                                aplicaciones web. Proporciona un sistema de rutas para gestionar las peticiones del
-                                usuario, modelos para manejar la lógica
-                                de negocio, controladores para actuar como intermediarios entre las vistas y los
-                                modelos, y vistas para presentar la información al usuario. Además, cuenta con un único
-                                punto de acceso para
-                                agregar seguridad a todos los demás archivos y asegurar la integridad de la aplicación.
+                                {{ lang('index.description') }}
                             </p>
                         </div>
                     </div>
                     <a class="scale-100 p-6 bg-neutral-800 rounded-lg" href="#">
                         <div class="space-y-4">
                             <h2 class="text-2xl font-bold text-white">
-                                Documentación Oficial
+                                {{ lang('index.official_documentation') }}
                                 <span class="text-orange-400">
-                                    (En desarrollo)
+                                    {{ lang('index.under_construction') }}
                                 </span>
                             </h2>
                             <p class="text-gray-200">
-                                Encuentra guías detalladas, tutoriales y documentación completa sobre cómo comenzar con
-                                JMFramework
+                                {{ lang('index.guide_description') }}
                             </p>
                         </div>
                     </a>
@@ -73,43 +724,47 @@
                         href="https://github.com/JoshuaMc1/JMFramework/issues" target="_blank">
                         <div class="space-y-4">
                             <h2 class="text-2xl font-bold text-white">
-                                Foro de GitHub <span class="text-orange-400">
-                                    (Issues)
+                                {{ lang('index.forum_description') }}
+                                <span class="text-orange-400">
+                                    {{ lang('index.issue') }}
                                 </span>
                             </h2>
                             <p class="text-gray-200">
-                                Explora y participa en las discusiones, propuestas y problemas abiertos en GitHub. Este
-                                es el lugar para informar sobre errores, solicitar nuevas características y contribuir
-                                al desarrollo de JMFramework.
+                                {{ lang('index.issue_description') }}
                             </p>
                         </div>
                     </a>
                     <div class="scale-100 p-6 bg-neutral-800 rounded-lg md:col-span-2">
                         <div class="space-y-4">
-                            <h2 class="text-2xl font-bold text-white">Información de Contacto (Creador del Framework)
+                            <h2 class="text-2xl font-bold text-white">
+                                {{ lang('index.contact_title') }}
                             </h2>
 
                             <div class="flex flex-col lg:flex-row lg:justify-between">
                                 <div class="flex flex-col gap-2">
-                                    <p class="text-gray-200">Nombre:
+                                    <p class="text-gray-200">
+                                        {{ lang('index.name') }}
                                         <span class="font-semibold">
-                                            Joshua David Mclean
-                                        </span>
-                                    </p>
-                                    <p class="text-gray-200">Correo Electrónico:
-                                        <span class="font-semibold">
-                                            <a href="mailto:joshua15mclean@gmail.com">joshua15mclean@gmail.com</a>
+                                            {{ lang('index.me') }}
                                         </span>
                                     </p>
                                     <p class="text-gray-200">
-                                        Formación académica:
+                                        {{ lang('index.email') }}
                                         <span class="font-semibold">
-                                            Estudiante de ingeniería en computación - UTH
+                                            <a href="mailto:{{ lang('index.my_email') }}">
+                                                {{ lang('index.my_email') }}
+                                            </a>
+                                        </span>
+                                    </p>
+                                    <p class="text-gray-200">
+                                        {{ lang('index.academic') }}
+                                        <span class="font-semibold">
+                                            {{ lang('index.academic_description') }}
                                         </span>
                                     </p>
                                 </div>
                                 <div class="flex flex-col gap-2 mt-4 md:mt-0">
-                                    <span class="text-gray-200">Redes sociales:</span>
+                                    <span class="text-gray-200">{{ lang('index.social_media') }}</span>
                                     <div class="flex flex-col sm:flex-row gap-2 mt-2">
                                         <a class="flex flex-row gap-2 items-center md:items-start bg-neutral-600 p-2 rounded-md"
                                             href="https://github.com/JoshuaMc1" target="_blank">
@@ -173,8 +828,6 @@
             </div>
         </div>
     </main>
-
-    <script src="{{ asset('js/app.js') }}" type="module"></script>
 </body>
 
 </html>

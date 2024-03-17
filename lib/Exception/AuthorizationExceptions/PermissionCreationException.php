@@ -21,8 +21,8 @@ class PermissionCreationException extends CustomException
     public function __construct($permissionId)
     {
         $errorCode = 2201;
-        $errorTitle = lang('error_creating_permission');
-        $errorMessage = lang('error_creating_permission_message', ['permissionId' => $permissionId]);
+        $errorTitle = lang('exception.error_creating_permission');
+        $errorMessage = lang('exception.error_creating_permission_message', ['permissionId' => $permissionId]);
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }
 }

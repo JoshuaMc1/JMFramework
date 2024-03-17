@@ -30,7 +30,7 @@ class CreateCommand extends Command
 
     private function getFilename($name)
     {
-        return app_path() . "/Console/Commands/{$name}.php";
+        return sprintf("%s/Console/Commands/%s.php", app_path(), $name);
     }
 
     private function commandExists($filename)

@@ -41,13 +41,10 @@ class UserRole extends Model
     public function deleteByUserIdAndRoleId(mixed $userId, mixed $roleId): bool
     {
         try {
-            $query = "DELETE FROM {$this->table} WHERE user_id = ? AND role_id = ?";
-            $stmt = $this->connection->prepare($query);
-            $stmt->bindParam(1, $userId, PDO::PARAM_INT);
-            $stmt->bindParam(2, $roleId, PDO::PARAM_INT);
-            $stmt->execute();
+            $role = Role::where('id', $roleId)->first();
 
-            if ($stmt->rowCount() > 0) {
+            if ($role) {
+                $role->users()->detach($userId);
                 return true;
             }
 
@@ -70,21 +67,10 @@ class UserRole extends Model
     public function createRole(array $data = []): bool
     {
         try {
-            $columns = implode(', ', array_keys($data));
-            $values = implode(', ', array_fill(0, count($data), ':'));
-
-            $query = "INSERT INTO {$this->table} ({$columns}) VALUES ({$values})";
-
-            $stmt = $this->connection->prepare($query);
-
-            foreach ($data as $key => $value) {
-                $stmt->bindValue(":$key", $value);
-            }
-
-            $stmt->execute();
+            Role::create($data);
 
             return true;
-        } catch (\Throwable  $th) {
+        } catch (\Throwable $th) {
             ExceptionHandler::handleException($th);
         }
     }

@@ -18,8 +18,8 @@ class PageNotFoundException extends CustomException
     public function __construct()
     {
         $errorCode = 404;
-        $errorTitle = lang('page_not_found');
-        $errorMessage = lang('page_not_found_message');
+        $errorTitle = lang('exception.page_not_found');
+        $errorMessage = lang('exception.page_not_found_message');
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }
 }

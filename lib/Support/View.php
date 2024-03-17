@@ -51,7 +51,7 @@ class View
             return $this->twig
                 ->render($view . config('view.extensions')[0], $data);
         } catch (\Throwable $th) {
-            ExceptionHandler::handleException(new CustomException(0101, lang('view_error'), $th->getMessage()));
+            ExceptionHandler::handleException(new CustomException(0101, lang('exception.view_error'), $th->getMessage()));
         }
     }
 }

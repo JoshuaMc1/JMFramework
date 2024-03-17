@@ -2,6 +2,7 @@
 
 namespace Lib\Kernel;
 
+use Lib\Connection\Connection;
 use Lib\Exception\AppExceptions\KeyNotFoundException;
 use Lib\Exception\ExceptionHandler;
 use Lib\Exception\KernelExceptions\RouteFileNotFoundException;
@@ -35,16 +36,22 @@ class BaseKernel implements KernelInterface
      */
     public static function boot()
     {
-        self::initializeGlobals();
-        self::initialize();
-        self::checkAppKey();
-        self::handleCors();
-        self::generateCsrfToken();
+        static::initializeGlobals();
+        static::initialize();
+        static::checkAppKey();
+        static::handleCors();
+        static::generateCsrfToken();
+        static::handleDatabase();
+    }
+
+    private static function handleDatabase()
+    {
+        new Connection();
     }
 
     public static function register()
     {
-        self::registerRoutes();
+        static::registerRoutes();
     }
 
     /**
@@ -94,13 +101,13 @@ class BaseKernel implements KernelInterface
      */
     private static function registerRoutes()
     {
-        $routes = self::getRoutes();
+        $routes = static::getRoutes();
 
-        if (!empty(self::$additionalRoutes)) {
-            $routes = array_merge($routes, self::$additionalRoutes);
+        if (!empty(static::$additionalRoutes)) {
+            $routes = array_merge($routes, static::$additionalRoutes);
         }
 
-        self::requireRoutes($routes);
+        static::requireRoutes($routes);
 
         Request::setNamedRoutes(Route::getNamedRoutes());
 

@@ -20,7 +20,7 @@ class InvalidRouteConfigurationException extends CustomException
     public function __construct($message)
     {
         $errorCode = 0110;
-        $errorTitle = lang('invalid_route_configuration');
+        $errorTitle = lang('exception.invalid_route_configuration');
         $errorMessage = $message;
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }

@@ -35,16 +35,12 @@ class Auth
                 return false;
             }
 
-            $session = new SessionModel();
-
-            $newSession = [
+            $session = SessionModel::create([
                 'user_id' => $user['id'],
                 'ip_address' => $_SERVER['REMOTE_ADDR'],
                 'user_agent' => $_SERVER['HTTP_USER_AGENT'],
                 'last_activity' => time(),
-            ];
-
-            $session = $session->create($newSession);
+            ]);
 
             Cookie::set('session_id', $session['id']);
             Session::set('session_id', $session['id']);
@@ -74,17 +70,11 @@ class Auth
                 return false;
             }
 
-            $personalAccessToken = new PersonalAccessToken();
-
-            $accessToken = [
+            $accessToken = PersonalAccessToken::create([
                 'name' => 'API Token',
                 'token' => Hash::encrypt(Token::createToken(['user_id' => $user['id']])),
                 'last_used_at' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-
-            $personalAccessToken = $personalAccessToken->create($accessToken);
+            ]);
 
             Cookie::set('api_token', $accessToken['token']);
 

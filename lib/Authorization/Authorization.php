@@ -79,12 +79,9 @@ class Authorization extends Model
      */
     private static function getRoleByIdOrName(int|string $roleIdOrName): ?array
     {
-
-        if (is_numeric($roleIdOrName)) {
-            return self::getRole($roleIdOrName);
-        } else {
-            return self::getRoleByName($roleIdOrName);
-        }
+        return (is_numeric($roleIdOrName)) ?
+            self::getRole($roleIdOrName) :
+            self::getRoleByName($roleIdOrName);
     }
 
     /**
@@ -101,14 +98,13 @@ class Authorization extends Model
     public static function revokeRoleFromUser(int|string $userId, int|string $roleId): bool
     {
         try {
-            if (is_numeric($roleId)) {
-                $role = self::getRole($roleId);
-            } else {
-                $role = self::getRoleByName($roleId);
-            }
+            $role = (is_numeric($roleId)) ?
+                self::getRole($roleId) : self::getRoleByName($roleId);
+
 
             if ($role !== null) {
                 $authorization = new UserRole();
+
                 $result = $authorization->select('*', [
                     'user_id' => $userId,
                     'role_id' => $role['id']
@@ -141,20 +137,17 @@ class Authorization extends Model
      */
     public static function grantPermissionToRole(int|string $roleId, int|string $permissionId): void
     {
-        if (is_numeric($roleId)) {
-            $role = self::getRole($roleId);
-        } else {
-            $role = self::getRoleByName($roleId);
-        }
+        $role = (is_numeric($roleId)) ?
+            self::getRole($roleId) :
+            self::getRoleByName($roleId);
 
-        if (is_numeric($permissionId)) {
-            $permission = self::getPermission($permissionId);
-        } else {
-            $permission = self::getPermissionByName($permissionId);
-        }
+        $permission = (is_numeric($permissionId)) ?
+            self::getPermission($permissionId) :
+            self::getPermissionByName($permissionId);
 
         if ($role !== null && $permission !== null) {
             $authorization = new RolePermission();
+
             $authorization->create(['role_id' => $role['id'], 'permission_id' => $permission['id']]);
         }
     }
@@ -167,20 +160,17 @@ class Authorization extends Model
      */
     public static function revokePermissionFromRole(int|string $roleId, int|string $permissionId): void
     {
-        if (is_numeric($roleId)) {
-            $role = self::getRole($roleId);
-        } else {
-            $role = self::getRoleByName($roleId);
-        }
+        $role = (is_numeric($roleId)) ?
+            self::getRole($roleId) :
+            self::getRoleByName($roleId);
 
-        if (is_numeric($permissionId)) {
-            $permission = self::getPermission($permissionId);
-        } else {
-            $permission = self::getPermissionByName($permissionId);
-        }
+        $permission = (is_numeric($permissionId)) ?
+            self::getPermission($permissionId) :
+            self::getPermissionByName($permissionId);
 
         if ($role !== null && $permission !== null) {
             $authorization = new RolePermission();
+
             $result = RolePermission::where('role_id', $role['id'])
                 ->where('permission_id', $permission['id'])
                 ->get();
@@ -225,9 +215,7 @@ class Authorization extends Model
      */
     private static function checkUserHasRole(int|string $userId, int|string $roleId): bool
     {
-        $result = UserRole::where('user_id', $userId)->where('role_id', $roleId)->get();
-
-        return !empty($result);
+        return !empty(UserRole::where('user_id', $userId)->where('role_id', $roleId)->get());
     }
 
     /**
@@ -239,9 +227,11 @@ class Authorization extends Model
      */
     public static function checkRoleHasPermission(int|string $roleId, int|string $permissionId): bool
     {
-        $result = RolePermission::where('role_id', $roleId)->where('permission_id', $permissionId)->get();
-
-        return count($result) > 0;
+        return count(
+            RolePermission::where('role_id', $roleId)
+                ->where('permission_id', $permissionId)
+                ->get()
+        ) > 0;
     }
 
     /**
@@ -255,6 +245,7 @@ class Authorization extends Model
         $result = UserRole::where('user_id', $userId)->get();
 
         $roles = [];
+
         foreach ($result as $row) {
             $roles[] = self::getRole($row['role_id']);
         }
@@ -315,29 +306,21 @@ class Authorization extends Model
      */
     public static function createRoles(array $roles)
     {
-        $roleModel = new Role();
-
         try {
-            $connection = $roleModel->getConnection();
-            $connection->beginTransaction();
-
-            $stmt = $connection->prepare("INSERT INTO {$roleModel->getTableName()} (name) VALUES (:roleName)");
+            $createdRoles = [];
 
             foreach ($roles as $role) {
-                $stmt->bindParam(':roleName', $role, PDO::PARAM_STR);
-                $stmt->execute();
+                $createdRole = Role::create(['name' => $role]);
+
+                $createdRoles[] = $createdRole;
             }
 
-            $connection->commit();
-
-            foreach ($roles as $role) {
-                $createdRole = self::getRoleByName($role);
-                if ($createdRole === null) {
+            foreach ($createdRoles as $role) {
+                if ($role === null) {
                     throw new RoleCreationException($role);
                 }
             }
         } catch (RoleCreationException | \Throwable $th) {
-            $connection->rollback();
             ExceptionHandler::handleException($th);
         }
     }
@@ -351,27 +334,19 @@ class Authorization extends Model
     public static function createPermissions(array $permissions)
     {
         try {
-            $permissionModel = new Permission();
-            $connection = $permissionModel->getConnection();
-            $connection->beginTransaction();
-
-            $stmt = $connection->prepare("INSERT INTO {$permissionModel->getTableName()} (name) VALUES (:permissionName)");
+            $createdPermissions = [];
 
             foreach ($permissions as $permission) {
-                $stmt->bindParam(':permissionName', $permission, PDO::PARAM_STR);
-                $stmt->execute();
+                $createdPermission = Permission::create(['name' => $permission]);
+                $createdPermissions[] = $createdPermission;
             }
 
-            $connection->commit();
-
-            foreach ($permissions as $permission) {
-                $createdPermission = self::getPermissionByName($permission);
-                if ($createdPermission === null) {
+            foreach ($createdPermissions as $permission) {
+                if ($permission === null) {
                     throw new PermissionCreationException($permission);
                 }
             }
         } catch (PermissionCreationException | \Throwable $th) {
-            $connection->rollback();
             ExceptionHandler::handleException($th);
         }
     }
@@ -393,28 +368,20 @@ class Authorization extends Model
                 throw new RoleNotFoundException($roleIdOrName);
             }
 
-            $roleId = $role['id'];
-            $rolePermissionModel = new RolePermission();
-            $connection = $rolePermissionModel->getConnection();
-            $connection->beginTransaction();
-
-            $stmt = $connection->prepare("INSERT INTO {$rolePermissionModel->getTableName()} (role_id, permission_id) VALUES (:roleId, :permissionId)");
+            $roleId = $role->id;
 
             foreach ($permissionIds as $permissionId) {
                 $permission = self::getPermission($permissionId);
 
                 if ($permission === null) {
-                    $connection->rollBack();
                     throw new PermissionNotFoundException($permissionId);
                 }
 
-                $permissionId = $permission['id'];
-                $stmt->bindParam(':roleId', $roleId, PDO::PARAM_INT);
-                $stmt->bindParam(':permissionId', $permissionId, PDO::PARAM_INT);
-                $stmt->execute();
+                $rolePermissionModel = new RolePermission();
+                $rolePermissionModel->role_id = $roleId;
+                $rolePermissionModel->permission_id = $permission->id;
+                $rolePermissionModel->save();
             }
-
-            $connection->commit();
         } catch (RoleNotFoundException | PermissionNotFoundException | \Throwable $th) {
             ExceptionHandler::handleException($th);
         }
@@ -438,6 +405,7 @@ class Authorization extends Model
         $userRoles = self::getUserRoles($user['id']);
 
         $permission = self::getPermissionByName($permissionName);
+
         if ($permission !== null) {
             foreach ($userRoles as $role) {
                 if (self::checkRoleHasPermission($role['id'], $permission['id'])) {
