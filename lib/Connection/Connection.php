@@ -3,7 +3,7 @@
 namespace Lib\Connection;
 
 use Lib\Exception\ConnectionExceptions\DatabaseConnectionException;
-use PDO;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 class Connection
 {
@@ -32,37 +32,24 @@ class Connection
     protected function connect()
     {
         try {
-            $dsn = "{$this->config['driver']}:host={$this->config['host']};dbname={$this->config['database']};charset={$this->config['charset']};port={$this->config['port']}";
+            $capsule = new Capsule;
 
-            $this->connection = new PDO(
-                $dsn,
-                $this->config['username'],
-                $this->config['password'],
-                [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false,
-                ]
-            );
+            $capsule->addConnection($this->config);
+            $capsule->setAsGlobal();
+            $capsule->bootEloquent();
+
+            $this->connection = $capsule->getConnection();
         } catch (\PDOException $exception) {
             throw new DatabaseConnectionException($exception->getCode() !== 0 ? $exception->getCode() : 0101, $exception->getMessage());
         }
     }
 
     /**
-     * Closes the database connection.
-     */
-    public function close(): void
-    {
-        $this->connection = null;
-    }
-
-    /**
-     * Gets the established database connection.
+     * Get the database connection.
      *
-     * @return PDO|null The PDO database connection.
+     * @return mixed
      */
-    public function getConnection(): ?PDO
+    public function getConnection()
     {
         return $this->connection;
     }

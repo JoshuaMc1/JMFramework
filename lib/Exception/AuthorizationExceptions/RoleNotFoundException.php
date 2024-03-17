@@ -19,8 +19,8 @@ class RoleNotFoundException extends CustomException
     public function __construct($roleId)
     {
         $errorCode = 2204;
-        $errorTitle = lang('role_not_found');
-        $errorMessage = lang('role_not_found_message', ['roleId' => $roleId]);
+        $errorTitle = lang('exception.role_not_found');
+        $errorMessage = lang('exception.role_not_found_message', ['roleId' => $roleId]);
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }
 }

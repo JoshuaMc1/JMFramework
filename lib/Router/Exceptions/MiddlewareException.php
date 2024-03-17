@@ -22,7 +22,7 @@ class MiddlewareException extends CustomException
     public function __construct($message)
     {
         $errorCode = 500;
-        $errorTitle = lang('middleware_exception');
+        $errorTitle = lang('exception.middleware_exception');
         $errorMessage = $message;
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }

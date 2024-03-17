@@ -18,8 +18,8 @@ class FileUploadException extends CustomException
     public function __construct($title = null, $message = null)
     {
         $errorCode = 0204;
-        $errorTitle = $title ?? lang('file_upload_error');
-        $errorMessage = $message ?? lang('file_upload_error_message');
+        $errorTitle = $title ?? lang('exception.file_upload_error');
+        $errorMessage = $message ?? lang('exception.file_upload_error_message');
 
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }

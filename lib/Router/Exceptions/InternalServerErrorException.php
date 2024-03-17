@@ -21,7 +21,7 @@ class InternalServerErrorException extends CustomException
     public function __construct($message)
     {
         $errorCode = 500;
-        $errorTitle = lang('internal_server_error');
+        $errorTitle = lang('exception.internal_server_error');
         $errorMessage = $message;
 
         parent::__construct($errorCode, $errorTitle, $errorMessage);

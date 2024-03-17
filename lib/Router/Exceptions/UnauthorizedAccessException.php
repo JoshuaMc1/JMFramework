@@ -22,8 +22,8 @@ class UnauthorizedAccessException extends CustomException
     public function __construct($message = null)
     {
         $errorCode = 401;
-        $errorTitle = lang('unauthorized_access');
-        $errorMessage = $message ?? lang('unauthorized_access_message');
+        $errorTitle = lang('exception.unauthorized_access');
+        $errorMessage = $message ?? lang('exception.unauthorized_access_message');
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }
 }

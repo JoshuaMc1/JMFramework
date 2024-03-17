@@ -425,7 +425,7 @@ class Route implements RouteInterface
 
                     return call_user_func_array([$controller, $callback[1]], $args);
                 default:
-                    throw new InvalidRouteConfigurationException(lang('invalid_callback_configuration'));
+                    throw new InvalidRouteConfigurationException(lang('exception.invalid_callback_configuration'));
             }
 
             return call_user_func_array($callback, $args);

@@ -46,7 +46,7 @@ class Storage
             $targetPath = $directory . '/' . $filename;
 
             if (file_exists($targetPath)) {
-                throw new FileUploadException(lang('file_already_exists'), lang('file_already_exists_message'));
+                throw new FileUploadException(lang('exception.file_already_exists'), lang('exception.file_already_exists_message'));
             }
 
             if (move_uploaded_file($file['tmp_name'], $targetPath)) {
@@ -101,7 +101,7 @@ class Storage
 
             return $http . '://' . $host . '/storage/' . ltrim($path, '/');
         } catch (\Throwable $th) {
-            ExceptionHandler::handleException(new CustomException(0206, lang('get_public_url_error'), lang('get_public_url_error_message', ['message' => $th->getMessage()])));
+            ExceptionHandler::handleException(new CustomException(0206, lang('exception.get_public_url_error'), lang('exception.get_public_url_error_message', ['message' => $th->getMessage()])));
         }
     }
 
@@ -116,7 +116,7 @@ class Storage
     {
         try {
             if (!isset($file['name'], $file['tmp_name'])) {
-                throw new FileUploadException(lang('invalid_file_message'));
+                throw new FileUploadException(lang('exception.invalid_file_message'));
             }
 
             return true;
@@ -241,14 +241,14 @@ class Storage
     {
         try {
             if (!in_array($file['type'], config('storage.allowed_types'))) {
-                throw new MimeTypeException(lang('invalid_file_type_message'));
+                throw new MimeTypeException(lang('exception.invalid_file_type_message'));
             }
 
             $maxSize = config('file.file_size');
             $fileSize = filesize($file['tmp_name']);
 
             if ($fileSize > $maxSize) {
-                throw new FileSizeException(lang('invalid_file_size_message'));
+                throw new FileSizeException(lang('exception.invalid_file_size_message'));
             }
 
             return true;

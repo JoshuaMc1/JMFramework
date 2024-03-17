@@ -26,6 +26,6 @@ class DatabaseConnectionException extends CustomException
      */
     public function __construct($errorCode = 500, $errorMessage = 'There was an error connecting to the database')
     {
-        parent::__construct($errorCode, lang('database_connection_error'), $errorMessage);
+        parent::__construct($errorCode, lang('exception.database_connection_error'), $errorMessage);
     }
 }

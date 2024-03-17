@@ -25,7 +25,7 @@ class Date
         try {
             return new DateTime('now', new DateTimeZone(config('app.timezone')));
         } catch (\Exception $e) {
-            throw new CustomException(2301, lang('invalid_date_format'), lang('invalid_date_format_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2301, lang('exception.invalid_date_format'), lang('exception.invalid_date_format_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -39,7 +39,7 @@ class Date
         try {
             return self::now();
         } catch (\Exception $e) {
-            throw new CustomException(2302, lang('get_today_error'), lang('get_today_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2302, lang('exception.get_today_error'), lang('exception.get_today_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -53,7 +53,7 @@ class Date
         try {
             return self::today()->modify('+1 day');
         } catch (\Exception $e) {
-            throw new CustomException(2303, lang('get_tomorrow_error'), lang('get_tomorrow_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2303, lang('exception.get_tomorrow_error'), lang('exception.get_tomorrow_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -67,7 +67,7 @@ class Date
         try {
             return self::today()->modify('-1 day');
         } catch (\Exception $e) {
-            throw new CustomException(2304, lang('get_yesterday_error'), lang('get_yesterday_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2304, lang('exception.get_yesterday_error'), lang('exception.get_yesterday_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -91,7 +91,7 @@ class Date
 
             return $dayOfWeek === 6 || $dayOfWeek === 7;
         } catch (\Exception $e) {
-            throw new CustomException(2305, lang('is_weekend_error'), lang('is_weekend_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2305, lang('exception.is_weekend_error'), lang('exception.is_weekend_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -110,7 +110,7 @@ class Date
 
             return $date->modify("+$days days");
         } catch (\Exception $e) {
-            throw new CustomException(2306, lang('add_days_error'), lang('add_days_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2306, lang('exception.add_days_error'), lang('exception.add_days_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -129,7 +129,7 @@ class Date
 
             return $date->modify("-$days days");
         } catch (\Exception $e) {
-            throw new CustomException(2307, lang('sub_days_error'), lang('sub_days_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2307, lang('exception.sub_days_error'), lang('exception.sub_days_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -148,7 +148,7 @@ class Date
 
             return $date->modify("+$weeks weeks");
         } catch (\Exception $e) {
-            throw new CustomException(2308, lang('add_weeks_error'), lang('add_weeks_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2308, lang('exception.add_weeks_error'), lang('exception.add_weeks_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -167,7 +167,7 @@ class Date
 
             return $date->modify("-$weeks weeks");
         } catch (\Exception $e) {
-            throw new CustomException(2309, lang('subtract_weeks_error'), lang('subtract_weeks_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2309, lang('exception.subtract_weeks_error'), lang('exception.subtract_weeks_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -186,7 +186,7 @@ class Date
 
             return $date->modify("+$months months");
         } catch (\Exception $e) {
-            throw new CustomException(2310, lang('add_months_error'), lang('add_months_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2310, lang('exception.add_months_error'), lang('exception.add_months_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -205,7 +205,7 @@ class Date
 
             return $date->modify("-$months months");
         } catch (\Exception $e) {
-            throw new CustomException(2311, lang('subtract_months_error'), lang('subtract_months_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2311, lang('exception.subtract_months_error'), lang('exception.subtract_months_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -224,7 +224,7 @@ class Date
 
             return $date->modify("+$years years");
         } catch (\Exception $e) {
-            throw new CustomException(2312, lang('add_years_error'), lang('add_years_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2312, lang('exception.add_years_error'), lang('exception.add_years_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -243,7 +243,7 @@ class Date
 
             return $date->modify("-$years years");
         } catch (\Exception $e) {
-            throw new CustomException(2313, lang('subtract_years_error'), lang('subtract_years_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2313, lang('exception.subtract_years_error'), lang('exception.subtract_years_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -262,7 +262,7 @@ class Date
 
             return $date->modify("+$hours hours");
         } catch (\Exception $e) {
-            throw new CustomException(2314, lang('add_hours_error'), lang('add_hours_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2314, lang('exception.add_hours_error'), lang('exception.add_hours_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -281,7 +281,7 @@ class Date
 
             return $date->modify("-$hours hours");
         } catch (\Exception $e) {
-            throw new CustomException(2315, lang('subtract_hours_error'), lang('subtract_hours_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2315, lang('exception.subtract_hours_error'), lang('exception.subtract_hours_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -300,7 +300,7 @@ class Date
 
             return $date->modify("+$minutes minutes");
         } catch (\Exception $e) {
-            throw new CustomException(2316, lang('add_minutes_error'), lang('add_minutes_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2316, lang('exception.add_minutes_error'), lang('exception.add_minutes_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -319,7 +319,7 @@ class Date
 
             return $date->modify("-$minutes minutes");
         } catch (\Exception $e) {
-            throw new CustomException(2317, lang('subtract_minutes_error'), lang('subtract_minutes_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2317, lang('exception.subtract_minutes_error'), lang('exception.subtract_minutes_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -338,7 +338,7 @@ class Date
 
             return $date->modify("+$seconds seconds");
         } catch (\Exception $e) {
-            throw new CustomException(2318, lang('add_seconds_error'), lang('add_seconds_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2318, lang('exception.add_seconds_error'), lang('exception.add_seconds_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -357,7 +357,7 @@ class Date
 
             return $date->modify("-$seconds seconds");
         } catch (\Exception $e) {
-            throw new CustomException(2319, lang('subtract_seconds_error'), lang('subtract_seconds_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2319, lang('exception.subtract_seconds_error'), lang('exception.subtract_seconds_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -380,7 +380,7 @@ class Date
 
             return $date->format($format);
         } catch (\Exception $e) {
-            throw new CustomException(2320, lang('invalid_date_format'), lang('invalid_date_format_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2320, lang('exception.invalid_date_format'), lang('exception.invalid_date_format_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -398,7 +398,7 @@ class Date
         $end = self::setTimeZone($end);
 
         if ($start > $end) {
-            throw new CustomException(2321, lang('invalid_date_range'), lang('invalid_date_range_message'));
+            throw new CustomException(2321, lang('exception.invalid_date_range'), lang('exception.invalid_date_range_message'));
         }
 
         $diff = $end->diff($start);
@@ -440,7 +440,7 @@ class Date
 
             return $weekdaysCount;
         } catch (\Exception $e) {
-            throw new CustomException(2322, lang('count_weekdays_error'), lang('count_weekdays_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2322, lang('exception.count_weekdays_error'), lang('exception.count_weekdays_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -454,7 +454,7 @@ class Date
         try {
             return time();
         } catch (\Exception $e) {
-            throw new CustomException(2323, lang('get_timestamps_error'), lang('get_timestamps_error_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2323, lang('exception.get_timestamps_error'), lang('exception.get_timestamps_error_message', ['message' => $e->getMessage()]));
         }
     }
 
@@ -470,7 +470,7 @@ class Date
         try {
             return $date->setTimezone(new DateTimeZone(config('app.timezone')));
         } catch (\Exception $e) {
-            throw new CustomException(2324, lang('invalid_timezone'), lang('invalid_timezone_message', ['message' => $e->getMessage()]));
+            throw new CustomException(2324, lang('exception.invalid_timezone'), lang('exception.invalid_timezone_message', ['message' => $e->getMessage()]));
         }
     }
 }

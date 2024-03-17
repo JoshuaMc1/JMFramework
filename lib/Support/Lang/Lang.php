@@ -70,15 +70,17 @@ class Lang
     {
         self::getInstance();
 
-        $translated = self::$translations[$key] ?? $key;
+        $parts = explode('.', $key);
+        $fileName = $parts[0];
+        $translationKey = $parts[1];
+
+        $translation = self::$translations[$fileName][$translationKey] ?? $key;
 
         if (!empty($replace)) {
-            $translated = str_replace(array_keys($replace), array_values($replace), $translated);
+            $translation = str_replace(array_keys($replace), array_values($replace), $translation);
         }
 
-        $translated = str_replace(':', '', $translated);
-
-        return $translated;
+        return $translation;
     }
 
     /**
@@ -100,8 +102,8 @@ class Lang
                 throw new \Exception('Lang is not configured in config/app.php.');
             }
 
-            $baseLang = base_path() . 'lang/' . self::$lang;
-            $libLang = lib_path() . '/Support/Lang/Langs/' . self::$lang;
+            $baseLang = sprintf('%s/lang/%s', base_path(), self::$lang);
+            $libLang = sprintf('%s/%s', lib_path(), 'Support/Lang/Langs/' . self::$lang);
 
             $publicTranslations = $this->loadTranslationsFromPath($baseLang);
             $libTranslations = $this->loadTranslationsFromPath($libLang);
@@ -132,8 +134,9 @@ class Lang
                 $files = glob($path . '/*.php');
 
                 foreach ($files as $file) {
+                    $translationKey = pathinfo($file, PATHINFO_FILENAME);
                     $translation = include $file;
-                    $translations = array_merge($translations, $translation);
+                    $translations[$translationKey] = $translation;
                 }
             }
 

@@ -20,6 +20,7 @@ JMFramework es un framework PHP diseñado para facilitar el desarrollo de aplica
 - **Storage:** Soporte para la gestión de archivos y carpetas.
 - **Validación de datos:** Soporte para la validación de datos de entrada.
 - **Validación de datos de entrada:** Soporte para la validación de datos de entrada.
+- **Eloquent ORM:** Soporte para la gestión de bases de datos relacionales.
 
 ## Instalación
 

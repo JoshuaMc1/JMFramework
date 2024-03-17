@@ -20,8 +20,8 @@ class PermissionNotFoundException extends CustomException
     public function __construct($permissionId)
     {
         $errorCode = 2202;
-        $errorTitle = lang('permission_not_found');
-        $errorMessage = lang('permission_not_found_message', ['permissionId' => $permissionId]);
+        $errorTitle = lang('exception.permission_not_found');
+        $errorMessage = lang('exception.permission_not_found_message', ['permissionId' => $permissionId]);
         parent::__construct($errorCode, $errorTitle, $errorMessage);
     }
 }

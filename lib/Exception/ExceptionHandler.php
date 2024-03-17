@@ -29,10 +29,10 @@ class ExceptionHandler
 
         $errorTitle = $exception instanceof CustomException ?
             $exception->getErrorTitle() :
-            lang('an_error_occurred');
+            lang('exception.an_error_occurred');
 
         $errorMessage = $exception instanceof CustomException ?
-            $exception->getErrorMessage() : ($exception->getMessage() ?: lang('an_error_occurred'));
+            $exception->getErrorMessage() : ($exception->getMessage() ?: lang('exception.an_error_occurred'));
 
         Log::debug($exception, $errorMessage);
 
