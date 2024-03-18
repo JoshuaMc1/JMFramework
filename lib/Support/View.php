@@ -23,11 +23,11 @@ class View
 
     public function __construct()
     {
-        $loader = new FilesystemLoader(config('view.paths')[0]);
+        $loader = new FilesystemLoader(config('view.paths'));
 
         $this->twig = new Environment($loader, [
             'cache' => config('view.compiled'),
-            'auto_reload' => config('view.auto_reload'),
+            'auto_reload' => config('view.auto_reload', true),
             'autoescape' => config('view.autoescape', false),
             'optimizations' => config('view.optimizations', -1),
             'extensions' => config('view.extensions', ['.twig']),
