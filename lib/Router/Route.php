@@ -4,6 +4,7 @@ namespace Lib\Router;
 
 use Lib\Router\Contracts\RouteInterface;
 use App\Http\Middleware\Middleware;
+use InvalidArgumentException;
 use Lib\Exception\ExceptionHandler;
 use Lib\Router\Exceptions\{
     MiddlewareException,
@@ -13,6 +14,10 @@ use Lib\Router\Exceptions\{
     MethodNotAllowedException
 };
 use Lib\Http\Request;
+use Lib\Model\Model;
+use Lib\Support\File;
+use ReflectionFunction;
+use ReflectionMethod;
 
 /**
  * Route Class
@@ -57,6 +62,13 @@ class Route implements RouteInterface
      * @var string $prefix
      */
     private static $prefix = '';
+
+    /**
+     * The controller class name.
+     * 
+     * @var string/null $controller
+     */
+    private static $controller = null;
 
     /**
      * Constants for HTTP methods.
@@ -196,18 +208,13 @@ class Route implements RouteInterface
         }
     }
 
-    /**
-     * Add middleware to the route.
-     * 
-     * @param array $middlewares
-     * 
-     * @return Route
-     */
-    public function addMiddlewareToRoute(array $middlewares = []): Route
+    public static function controller(string $controller): Route
     {
-        $this::$middlewares = $middlewares;
+        $route = new static();
 
-        return $this;
+        $route::$controller = $controller;
+
+        return $route;
     }
 
     /**
@@ -274,21 +281,30 @@ class Route implements RouteInterface
     /**
      * Define a group of routes.
      * 
-     * @param array $middlewares
      * @param callable $callback
      * 
      * @return void
      */
-    public static function group(array $middlewares, callable $callback): void
+    public static function group(callable $callback): void
     {
         try {
             $route = new static();
 
-            $route::$middlewares = $middlewares;
-
             $callback($route);
 
-            $route::$middlewares = [];
+            if (self::$controller !== null) {
+                foreach (self::$routes as $method => &$routes) {
+                    foreach ($routes as &$route) {
+                        if (is_string($route['callback']) && strpos($route['callback'], '@') === false) {
+                            $route['callback'] = sprintf('%s@%s', self::$controller, $route['callback']);
+                        }
+                    }
+                }
+
+                unset($route);
+            }
+
+            self::$controller = null;
         } catch (\Throwable $th) {
             ExceptionHandler::handleException(new MiddlewareException($th->getMessage()));
         }
@@ -410,51 +426,143 @@ class Route implements RouteInterface
         try {
             $callback = $match['callback'];
             $params = $match['params'];
-
             $args = [];
 
             switch (true) {
                 case is_callable($callback):
-                    $args = self::resolveCallableArguments($callback);
+                    $args = self::resolveDependenciesForCallback($callback);
 
-                    break;
+                    if (count($params) > 0) {
+                        $args = array_merge($args, $params);
+                    }
+
+                    return call_user_func_array($callback, $args);
+
                 case is_array($callback):
                     $controller = new $callback[0];
-                    $request = new Request();
-                    $args = array_merge([$request], $params);
+                    $dependencies = self::resolveDependenciesForCallback($callback);
+                    $args = array_merge($dependencies, $params);
 
                     return call_user_func_array([$controller, $callback[1]], $args);
+
+                case is_string($callback):
+                    [$class, $method] = explode('@', $callback);
+
+                    $class = self::findControllerClass($class);
+
+                    if (!class_exists($class)) {
+                        throw new InvalidRouteConfigurationException(lang('exception.invalid_class_configuration', [':class' => $class]));
+                    }
+
+                    $controller = new $class();
+                    $dependencies = self::resolveDependenciesForCallback($callback);
+
+                    $args = array_merge($dependencies, $params);
+
+                    return call_user_func_array([$controller, $method], $args);
+
                 default:
                     throw new InvalidRouteConfigurationException(lang('exception.invalid_callback_configuration'));
             }
-
-            return call_user_func_array($callback, $args);
         } catch (InvalidRouteConfigurationException $th) {
             ExceptionHandler::handleException($th);
         }
     }
 
     /**
-     * Resolve the callable arguments.
+     * Resolve dependencies for the callback.
      * 
      * @param mixed $callback
      * 
      * @return array
      */
-    private static function resolveCallableArguments(array $callback): array
+    private static function resolveDependenciesForCallback($callback): array
     {
-        $reflector = is_array($callback)
-            ? new \ReflectionMethod($callback[0], $callback[1])
-            : new \ReflectionFunction($callback);
+        $reflectionMethod = null;
 
-        $parameters = $reflector->getParameters();
-        $args = [];
+        switch (true) {
+            case is_array($callback):
+                $reflectionMethod = new ReflectionMethod($callback[0], $callback[1]);
+                break;
 
-        foreach ($parameters as $parameter) {
-            $args[] = ($parameter->getType() === Request::class) ? new Request() : null;
+            case is_string($callback):
+                [$class, $method] = explode('@', $callback);
+                $class = self::findControllerClass($class);
+                $reflectionMethod = new ReflectionMethod($class, $method);
+                break;
+
+            case is_callable($callback):
+                $reflectionMethod = new ReflectionFunction($callback);
+                break;
+
+            default:
+                throw new InvalidArgumentException(lang('exception.invalid_callback_configuration'));
         }
 
-        return $args;
+        $dependencies = [];
+
+        foreach ($reflectionMethod->getParameters() as $param) {
+            $className = $param->getType() ? $param->getType()->getName() : null;
+
+            if ($className === 'Request') {
+                $dependencies[] = new Request();
+            } elseif ($className && class_exists($className)) {
+                $instance = new $className();
+
+                $dependencies[] = ($instance instanceof Model) ? $instance->first() : $instance;
+            }
+        }
+
+        return $dependencies;
+    }
+
+    /**
+     * Find the controller class based on the given controller name.
+     * 
+     * @param string $controllerName
+     * 
+     * @return string|null
+     */
+    private static function findControllerClass(string $controllerName): ?string
+    {
+        $controllerPath = controller_path();
+
+        $files = self::searchFiles($controllerPath, $controllerName);
+
+        foreach ($files as $file) {
+            $className = str_replace([$controllerPath, '/', '.php'], ['App\\Http\\Controllers', '\\', ''], $file);
+
+            if (class_exists($className)) {
+                return $className;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Search for the files in the given directory.
+     * 
+     * @param string $directory
+     * 
+     * @return array
+     */
+    private static function searchFiles(string $directory, string $controllerName): array
+    {
+        $files = [];
+        $items = File::scandir($directory);
+
+        foreach ($items as $item) {
+            $path = sprintf('%s/%s', $directory, $item);
+
+            if (is_dir($path)) {
+                $files = array_merge($files, self::searchFiles($path, $controllerName));
+            } elseif (is_file($path) && $item === $controllerName . '.php') {
+                $files[] = $path;
+            }
+        }
+
+        return $files;
     }
 
     /**

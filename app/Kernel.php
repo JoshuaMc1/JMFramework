@@ -40,15 +40,10 @@ class Kernel implements KernelInterface
          * @see \Lib\Kernel\BaseKernel
          * 
          * @var array
-         * 
-         * @example
-         * 
-         * BaseKernel::$additionalRoutes = [
-         *    sprintf('%s/admin.php', routes_path()),
-         *    ...
-         *  ]
          */
-        BaseKernel::$additionalRoutes = [];
+        BaseKernel::$additionalRoutes = [
+            // sprintf('%s/api.php', routes_path()),
+        ];
 
         /**
          * Register the routes for the application.

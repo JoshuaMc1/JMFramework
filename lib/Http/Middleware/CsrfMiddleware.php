@@ -19,23 +19,19 @@ class CsrfMiddleware implements MiddlewareInterface
     public function handle(callable $next, Request $request)
     {
         try {
-            if (!$request->isMethod('POST')) {
+            if ($request->isMethod('GET')) {
                 return $next($request);
             }
 
-            $currentRoute = $request->getPath();
-
-            if (Route::shouldExcludeCsrfForRoute($currentRoute)) {
+            if (Route::shouldExcludeCsrfForRoute($request->getPath())) {
                 return $next($request);
             }
 
-            if (in_array($currentRoute, $this->except)) {
+            if (in_array($request->getPath(), $this->except)) {
                 return $next($request);
             }
 
-            $submittedCsrfToken = $request->input('_token', '');
-
-            if (!CsrfTokenManager::validateCsrfToken($submittedCsrfToken)) {
+            if (!CsrfTokenManager::validateCsrfToken($request->input('_token', ''))) {
                 throw new CSRFTokenException();
             }
 

@@ -2,7 +2,13 @@
 
 use PHPUnit\Framework\TestCase;
 use Lib\Http\Response;
+use PHPUnit\Framework\Attributes\{
+    CoversClass,
+    UsesClass
+};
 
+#[CoversClass(Response::class)]
+#[UsesClass(Response::class)]
 class ResponseFeatureTest extends TestCase
 {
     protected function setUp(): void
@@ -24,7 +30,7 @@ class ResponseFeatureTest extends TestCase
         $data = ['name' => 'John Doe', 'age' => 42];
         $response = Response::json($data, 200);
 
-        $output = $response->getBody();
+        $output = $response->send();
 
         $this->assertEquals('{"name":"John Doe","age":42}', $output);
         $this->assertEquals(200, $response->getStatusCode());
@@ -36,7 +42,7 @@ class ResponseFeatureTest extends TestCase
         $data = '<h1>Hello, World!</h1>';
         $response = Response::html($data, 200);
 
-        $output = $response->getBody();
+        $output = $response->send();
 
         $this->assertEquals($data, $output);
         $this->assertEquals(200, $response->getStatusCode());
@@ -48,7 +54,7 @@ class ResponseFeatureTest extends TestCase
         $data = 'Hello, World!';
         $response = Response::text($data, 200);
 
-        $output = $response->getBody();
+        $output = $response->send();
 
         $this->assertEquals($data, $output);
         $this->assertEquals(200, $response->getStatusCode());

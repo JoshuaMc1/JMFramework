@@ -3,11 +3,17 @@
 namespace Test\Unit;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\{
+    CoversClass,
+    UsesClass
+};
 
+#[UsesClass(ExampleTest::class)]
+#[CoversClass(ExampleTest::class)]
 class ExampleTest extends TestCase
 {
     /** @test */
-    public function test_that_true_is_true()
+    public function testIsTrue()
     {
         $this->assertTrue(true);
     }
