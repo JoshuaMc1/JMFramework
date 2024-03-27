@@ -1,14 +1,21 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Lib\Console;
 
-require_once __DIR__ . '/../../../lib/Global/Global.php';
+require_once __DIR__ . '/../Global/Global.php';
 
 use Illuminate\Console\Command;
 use Lib\Database\ColumnDefinition;
 use Lib\Database\Contracts\Schema;
 use Lib\Support\Env;
 
+/**
+ * Class SchemaCommand
+ * 
+ * This command will execute the schema for the database.
+ * 
+ * @author Joshua McLean
+ */
 class SchemaCommand extends Command
 {
     protected $signature = 'schema:run';

@@ -1,11 +1,18 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Lib\Console;
 
-require_once __DIR__ . '/../../../lib/Global/Global.php';
+require_once __DIR__ . '/../Global/Global.php';
 
 use Illuminate\Console\Command;
 
+/**
+ * Class CreateModelCommand
+ * 
+ * This command creates a new model
+ * 
+ * @author Joshua McLean
+ */
 class CreateModelCommand extends Command
 {
     protected $signature = 'create:model {name}';

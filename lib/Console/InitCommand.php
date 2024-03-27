@@ -1,12 +1,19 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Lib\Console;
 
-require_once __DIR__ . '/../../../lib/Global/Global.php';
+require_once __DIR__ . '/../Global/Global.php';
 
 use Illuminate\Console\Command;
 use Lib\Support\Env;
 
+/**
+ * Class InitCommand
+ * 
+ * This command publishes the initial tables for the application.
+ * 
+ * @author Joshua Mclean
+ */
 class InitCommand extends Command
 {
     protected $signature = 'init';

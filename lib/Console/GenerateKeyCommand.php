@@ -1,12 +1,19 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Lib\Console;
 
-require_once __DIR__ . '/../../../lib/Global/Global.php';
+require_once __DIR__ . '/../Global/Global.php';
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
+/**
+ * Class GenerateKeyCommand
+ * 
+ * This command will generate an application key.
+ * 
+ * @author Joshua Mclean
+ */
 class GenerateKeyCommand extends Command
 {
     protected $signature = 'key:generate';

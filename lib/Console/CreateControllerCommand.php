@@ -1,11 +1,18 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Lib\Console;
 
-require_once __DIR__ . '/../../../lib/Global/Global.php';
+require_once __DIR__ . '/../Global/Global.php';
 
 use Illuminate\Console\Command;
 
+/**
+ * Class CreateControllerCommand
+ * 
+ * This command will create a controller.
+ * 
+ * @author Joshua Mclean
+ */
 class CreateControllerCommand extends Command
 {
     protected $signature = 'create:controller {name} {--r}';

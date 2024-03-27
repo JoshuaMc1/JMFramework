@@ -1,12 +1,19 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Lib\Console;
 
-require_once __DIR__ . '/../../../lib/Global/Global.php';
+require_once __DIR__ . '/../Global/Global.php';
 
 use Illuminate\Console\Command;
 use Lib\Support\Cache\Cache;
 
+/**
+ * Class CacheExpiredClearCommand
+ * 
+ * This command will clear expired cache.
+ * 
+ * @author Joshua Mclean
+ */
 class CacheExpiredClearCommand extends Command
 {
     protected $signature = 'cache:clear';
