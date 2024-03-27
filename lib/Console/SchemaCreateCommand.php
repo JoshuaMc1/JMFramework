@@ -1,12 +1,19 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Lib\Console;
 
-require_once __DIR__ . '/../../../lib/Global/Global.php';
+require_once __DIR__ . '/../Global/Global.php';
 
 use Illuminate\Console\Command;
 use Lib\Support\Date;
 
+/**
+ * Class SchemaCreateCommand
+ * 
+ * This command will create a new schema in the database.
+ * 
+ * @author Joshua McLean
+ */
 class SchemaCreateCommand extends Command
 {
     protected $signature = 'create:schema {schema}';

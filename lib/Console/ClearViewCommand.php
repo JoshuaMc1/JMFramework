@@ -1,12 +1,19 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Lib\Console;
 
-require_once __DIR__ . '/../../../lib/Global/Global.php';
+require_once __DIR__ . '/../Global/Global.php';
 
 use Illuminate\Console\Command;
 use Lib\Support\File;
 
+/**
+ * Class ClearViewCommand
+ * 
+ * This command will clear all views
+ * 
+ * @author Joshua Mclean
+ */
 class ClearViewCommand extends Command
 {
     protected $signature = 'view:clear';

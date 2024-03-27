@@ -1,11 +1,18 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Lib\Console;
 
-require_once __DIR__ . '/../../../lib/Global/Global.php';
+require_once __DIR__ . '/../Global/Global.php';
 
 use Illuminate\Console\Command;
 
+/**
+ * Class RunServerCommand
+ * 
+ * This command will run the local server.
+ * 
+ * @author Joshua McLean
+ */
 class RunServerCommand extends Command
 {
     protected $signature = 'server {--host=localhost} {--port=8000}';

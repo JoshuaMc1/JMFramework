@@ -1,9 +1,16 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Lib\Console;
 
 use Illuminate\Console\Command;
 
+/**
+ * Class TailwindCommand
+ * 
+ * This class generates the Tailwind CSS style sheet.
+ * 
+ * @author Joshua Mclean
+ */
 class TailwindCommand extends Command
 {
     protected $signature = 'tailwind:generate';

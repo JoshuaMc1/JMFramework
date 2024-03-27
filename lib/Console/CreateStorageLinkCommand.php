@@ -1,11 +1,18 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Lib\Console;
 
-require_once __DIR__ . '/../../../lib/Global/Global.php';
+require_once __DIR__ . '/../Global/Global.php';
 
 use Illuminate\Console\Command;
 
+/**
+ * Class CreateStorageLinkCommand
+ * 
+ * This command will create a symbolic link from the public directory to the storage directory.
+ * 
+ * @author Joshua McLean
+ */
 class CreateStorageLinkCommand extends Command
 {
     protected $signature = 'storage:link';

@@ -1,11 +1,18 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Lib\Console;
 
-require_once __DIR__ . '/../../../lib/Global/Global.php';
+require_once __DIR__ . '/../Global/Global.php';
 
 use Illuminate\Console\Command;
 
+/**
+ * Class CreateMiddlewareCommand
+ * 
+ * This command will create a new middleware.
+ * 
+ * @author Joshua Mclean
+ */
 class CreateMiddlewareCommand extends Command
 {
     protected $signature = 'create:middleware {name}';
