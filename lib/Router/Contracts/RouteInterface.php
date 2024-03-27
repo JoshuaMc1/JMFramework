@@ -24,7 +24,7 @@ interface RouteInterface
 
     public static function middleware(array $middlewares = []): Route;
 
-    public function addMiddlewareToRoute(array $middlewares = []): Route;
+    public static function controller(string $controller): Route;
 
     public static function shouldExcludeCsrfForRoute(string $uri): bool;
 
@@ -32,7 +32,7 @@ interface RouteInterface
 
     public static function getDefaultMiddlewares(): array;
 
-    public static function group(array $middlewares, callable $callback): void;
+    public static function group(callable $callback): void;
 
     public static function dispatch(): void;
 

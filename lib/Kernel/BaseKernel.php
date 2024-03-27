@@ -123,7 +123,6 @@ class BaseKernel implements KernelInterface
     {
         return [
             sprintf('%s/web.php', routes_path()),
-            sprintf('%s/api.php', routes_path()),
         ];
     }
 

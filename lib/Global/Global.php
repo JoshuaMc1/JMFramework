@@ -1,6 +1,7 @@
 <?php
 
 use Lib\Http\{
+    Auth,
     CsrfTokenManager,
     ErrorHandler,
     Request,
@@ -698,5 +699,17 @@ if (!function_exists('lang')) {
     function lang(string $key, array $replacements = []): string
     {
         return Lang::lang($key, $replacements);
+    }
+}
+
+if (!function_exists('auth')) {
+    /**
+     * Get the auth instance.
+     * 
+     * @return Auth The auth instance.
+     * */
+    function auth(): Auth
+    {
+        return new Auth();
     }
 }

@@ -53,6 +53,7 @@ class GlobalFunctionsExtension extends AbstractExtension
             new TwigFunction('bcrypt', 'bcrypt'),
             new TwigFunction('verify_bcrypt', 'verify_bcrypt'),
             new TwigFunction('lang', 'lang'),
+            new TwigFunction('auth', 'auth'),
         ];
     }
 }

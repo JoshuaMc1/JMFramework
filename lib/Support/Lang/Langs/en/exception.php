@@ -104,4 +104,5 @@ return [
     'invalid_operator_message' => 'The operator is invalid. Please check the operator and try again.',
     'table_not_set' => 'Database Table Error',
     'table_not_set_message' => 'The table name is not set. Please check the table name and try again.',
+    'invalid_class_configuration' => 'The class :class is not configured correctly or not found. Please check the class and try again.',
 ];

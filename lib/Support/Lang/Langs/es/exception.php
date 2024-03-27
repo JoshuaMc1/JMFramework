@@ -104,4 +104,5 @@ return [
     'invalid_operator_message' => 'El operador no es válido. Compruebe el operador e inténtelo de nuevo.',
     'table_not_set' => 'Error de tabla de base de datos',
     'table_not_set_message' => 'El nombre de la tabla no está configurado o no existe. Compruebe el nombre de la tabla e inténtelo de nuevo.',
+    'invalid_class_configuration' => 'La clase :class no está configurada correctamente o no se encuentra. Por favor, compruebe la clase e inténtelo de nuevo.',
 ];
