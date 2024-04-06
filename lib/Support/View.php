@@ -2,6 +2,12 @@
 
 namespace Lib\Support;
 
+use Jasny\Twig\{
+    ArrayExtension,
+    DateExtension,
+    PcreExtension,
+    TextExtension,
+};
 use Lib\Exception\{
     CustomException,
     ExceptionHandler
@@ -35,6 +41,10 @@ class View
         ]);
 
         $this->twig->addExtension(new GlobalFunctionsExtension());
+        $this->twig->addExtension(new DateExtension());
+        $this->twig->addExtension(new PcreExtension());
+        $this->twig->addExtension(new TextExtension());
+        $this->twig->addExtension(new ArrayExtension());
     }
 
     /**
