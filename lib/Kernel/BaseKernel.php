@@ -42,6 +42,7 @@ class BaseKernel implements KernelInterface
         static::handleCors();
         static::generateCsrfToken();
         static::handleDatabase();
+        static::defaultHeaders();
     }
 
     private static function handleDatabase()
@@ -162,6 +163,13 @@ class BaseKernel implements KernelInterface
             }
         } catch (\Throwable $th) {
             ExceptionHandler::handleException($th);
+        }
+    }
+
+    private static function defaultHeaders()
+    {
+        if (config('app.env') === 'production') {
+            header('Strict-Transport-Security: max-age=31536000');
         }
     }
 }
