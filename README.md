@@ -19,7 +19,6 @@ JMFramework es un framework PHP diseñado para facilitar el desarrollo de aplica
 - **Sistema de migraciones:** El proyecto cuenta con su propio sistema de migraciones llamado SchemaForge el cual te permite realizar migraciones de base de datos de forma sencilla.
 - **Storage:** Soporte para la gestión de archivos y carpetas.
 - **Validación de datos:** Soporte para la validación de datos de entrada.
-- **Validación de datos de entrada:** Soporte para la validación de datos de entrada.
 - **Eloquent ORM:** Soporte para la gestión de bases de datos relacionales.
 
 ## Instalación
@@ -59,7 +58,7 @@ JMFramework es un framework PHP diseñado para facilitar el desarrollo de aplica
 
 ## Documentación
 
-La documentación completa está actualmente en desarrollo. Estamos trabajando arduamente para proporcionar información detallada sobre cómo comenzar con JMFramework, configurar tu proyecto, y utilizar todas las características ofrecidas. ¡Estén atentos para futuras actualizaciones!
+La documentación completa ya está disponible en la siguiente URL: [JMFramework Documentation](http://jmprojects.atwebpages.com/). Hemos trabajado arduamente para proporcionar información detallada sobre cómo comenzar con JMFramework, configurar tu proyecto y utilizar todas las características ofrecidas. ¡Visita el enlace para obtener más información!
 
 ## Contribuir
 
