@@ -18,7 +18,7 @@ $finder->files()->in([
 
 $container = new Container();
 $dispatcher = new Dispatcher($container);
-$application = new Application($container, $dispatcher, 'v2.2.2');
+$application = new Application($container, $dispatcher, 'v2.2.3');
 
 $namespaces = ['App\Console\Commands\\', 'Lib\Console\\'];
 

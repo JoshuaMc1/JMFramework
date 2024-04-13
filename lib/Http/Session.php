@@ -19,7 +19,7 @@ class Session
      *
      * @throws \Throwable If an error occurs during session initialization.
      */
-    private function __construct()
+    public function __construct()
     {
         try {
             if (session_status() !== PHP_SESSION_ACTIVE) {

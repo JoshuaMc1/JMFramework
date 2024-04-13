@@ -6,6 +6,7 @@ use Lib\Http\{
     ErrorHandler,
     Request,
     Response,
+    Session,
 };
 use Lib\Support\{
     Config,
@@ -108,6 +109,18 @@ if (!function_exists('dd')) {
 
         echo $output;
         exit;
+    }
+}
+
+if (!function_exists('session')) {
+    /**
+     * The function `session` is a helper function in PHP that returns the value of a session key.
+     * 
+     * @return Session
+     */
+    function session(): Session
+    {
+        return new Session();
     }
 }
 
