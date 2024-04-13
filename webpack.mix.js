@@ -26,4 +26,7 @@ mix.js('resources/js/app.js', 'public/js')
                 extractComments: false
             }),
         ],
+        optimization: {
+            minimize: true,
+        },
     });
